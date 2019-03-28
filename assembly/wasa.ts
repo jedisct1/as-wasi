@@ -1,12 +1,10 @@
 // The entry file of your WebAssembly module.
 
-import 'allocator/arena';
 import {
   errno, fd_write, fd_read, random_get, clock_time_get, proc_exit,
   environ_sizes_get, environ_get, args_sizes_get, args_get, path_open,
   oflags, rights, lookupflags, fdflags, fd, fd_renumber
 } from './wasi_unstable';
-export { memory };
 
 export type Descriptor = fd;
 
