@@ -165,7 +165,7 @@ export class IO {
     if (s_utf8_ === null) {
       return null;
     }
-    let s_utf8 = s_utf8_ as Array<u8>;
+    let s_utf8 = s_utf8_!;
     let s_utf8_len = s_utf8.length;
     let s_utf8_buf = memory.allocate(s_utf8_len);
     for (let i = 0; i < s_utf8_len; i++) {

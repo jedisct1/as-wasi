@@ -13,6 +13,6 @@ import "allocator/arena";
 import { Console, Environ } from "../node_modules/wasa/assembly";
 
 let env = new Environ();
-let home = env.get("HOME") as String;
+let home = env.get("HOME")!;
 Console.log(home);
 ```
