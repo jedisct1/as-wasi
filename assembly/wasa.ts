@@ -1,36 +1,11 @@
 // The entry file of your WebAssembly module.
 
 import 'allocator/arena';
+import {
+  errno, fd_write, fd_read, random_get, clock_time_get, proc_exit,
+  environ_sizes_get, environ_get, args_sizes_get, args_get
+} from './wasi_unstable';
 export { memory };
-
-@external("wasi_unstable", "fd_write")
-declare function fd_write(fd: usize, iovs_ptr: usize, iovs_len: usize, written_p: usize): usize;
-
-@external("wasi_unstable", "fd_read")
-declare function fd_read(fd: usize, iovs_ptr: usize, iovs_len: usize, read_p: usize): usize;
-
-@external("wasi_unstable", "random_get")
-declare function random_get(buf: usize, len: usize): u16;
-
-@external("wasi_unstable", "clock_time_get")
-declare function clock_time_get(clock_id: u32, precision: u64, time_p: usize): void;
-
-@external("wasi_unstable", "proc_exit")
-declare function proc_exit(status: u32): void;
-
-@external("wasi_unstable", "environ_sizes_get")
-declare function environ_sizes_get(count: u32, size: u32): u16;
-
-@external("wasi_unstable", "environ_get")
-declare function environ_get(env_ptrs_p: usize, buf_p: usize): u16;
-
-@external("wasi_unstable", "args_sizes_get")
-declare function args_sizes_get(count: u32, size: u32): u16;
-
-@external("wasi_unstable", "args_get")
-declare function args_get(env_ptrs_p: usize, buf_p: usize): u16;
-
-const __WASI_ESUCCESS: u16 = 0;
 
 export class IO {
   /**
@@ -223,7 +198,7 @@ export class Random {
     let ptr = buffer.data;
     while (len > 0) {
       let chunk = min(len, 256);
-      if (random_get(ptr, chunk) != __WASI_ESUCCESS) {
+      if (random_get(ptr, chunk) != errno.SUCCESS) {
         abort();
       }
       len -= chunk;
@@ -277,14 +252,14 @@ export class Environ {
     this.env = [];
     let count_and_size = memory.allocate(2 * sizeof<usize>());
     let ret = environ_sizes_get(count_and_size, count_and_size + 4);
-    if (ret != __WASI_ESUCCESS) {
+    if (ret != errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size);
     let size = load<usize>(count_and_size + sizeof<usize>());
     let env_ptrs = memory.allocate((count + 1) * sizeof<usize>());
     let buf = memory.allocate(size);
-    if (environ_get(env_ptrs, buf) != __WASI_ESUCCESS) {
+    if (environ_get(env_ptrs, buf) != errno.SUCCESS) {
       abort();
     }
     for (let i: usize = 0; i < count; i++) {
@@ -326,14 +301,14 @@ export class CommandLine {
     this.args = [];
     let count_and_size = memory.allocate(2 * sizeof<usize>());
     let ret = args_sizes_get(count_and_size, count_and_size + 4);
-    if (ret != __WASI_ESUCCESS) {
+    if (ret != errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size);
     let size = load<usize>(count_and_size + sizeof<usize>());
     let env_ptrs = memory.allocate((count + 1) * sizeof<usize>());
     let buf = memory.allocate(size);
-    if (args_get(env_ptrs, buf) != __WASI_ESUCCESS) {
+    if (args_get(env_ptrs, buf) != errno.SUCCESS) {
       abort();
     }
     for (let i: usize = 0; i < count; i++) {
