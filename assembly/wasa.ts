@@ -314,9 +314,7 @@ export class Date {
 export class Performance {
   static now(): f64 {
     let time_ptr = memory.allocate(8);
-    if (clock_res_get(clockid.MONOTONIC, time_ptr) != errno.SUCCESS) {
-      clock_res_get(clockid.REALTIME, time_ptr);
-    }
+    clock_res_get(clockid.MONOTONIC, time_ptr);
     let res_ts = load<u64>(time_ptr);
     memory.free(time_ptr);
     return res_ts as f64;
