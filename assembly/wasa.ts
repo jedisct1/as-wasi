@@ -79,6 +79,9 @@ export class IO {
   static write(fd: Descriptor, data: Array<u8>): void {
     let data_buf_len = data.length;
     let data_buf = memory.allocate(data_buf_len);
+    for (let i = 0; i < data_buf_len; i++) {
+      store<u8>(data_buf + i, unchecked(data[i]));
+    }
     let iov = memory.allocate(2 * sizeof<usize>());
     store<u32>(iov, data_buf);
     store<u32>(iov + sizeof<usize>(), data_buf_len);
