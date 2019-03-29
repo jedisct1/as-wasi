@@ -3,7 +3,7 @@
 import {
   errno, fd_write, fd_read, random_get, clock_time_get, proc_exit,
   environ_sizes_get, environ_get, args_sizes_get, args_get, path_open,
-  oflags, rights, lookupflags, fdflags, fd, fd_renumber
+  oflags, rights, lookupflags, fdflags, fd, fd_renumber, fd_close
 } from './wasi_unstable';
 
 export type Descriptor = fd;
@@ -63,6 +63,14 @@ export class Filesystem {
 }
 
 export class IO {
+  /**
+   * Close a file descriptor
+   * @param fd file descriptor
+   */
+  static close(fd: Descriptor): void {
+    fd_close(fd);
+  }
+
   /**
    * Write data to a file descriptor
    * @param fd file descriptor
