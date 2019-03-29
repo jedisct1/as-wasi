@@ -42,9 +42,9 @@ export class Filesystem {
   */
   static openForWrite(path: string, dirfd: Descriptor = 3): Descriptor | null {
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
-    let fd_oflags: oflags = oflags.CREAT | oflags.TRUNC;
+    let fd_oflags: oflags = oflags.CREAT;
     let fd_rights = rights.FD_WRITE | rights.FD_SEEK |
-      rights.FD_TELL | rights.FD_FILESTAT_GET;
+      rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
     let path_utf8_len: usize = path.lengthUTF8 - 1;
