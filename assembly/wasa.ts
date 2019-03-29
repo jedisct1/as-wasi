@@ -1,9 +1,25 @@
 // The entry file of your WebAssembly module.
 
 import {
-  errno, fd_write, fd_read, random_get, clock_time_get, proc_exit,
-  environ_sizes_get, environ_get, args_sizes_get, args_get, path_open,
-  oflags, rights, lookupflags, fdflags, fd, fd_renumber, fd_close
+  errno,
+  clockid,
+  fd_write,
+  fd_read,
+  random_get,
+  clock_time_get,
+  clock_res_get,
+  proc_exit,
+  environ_sizes_get,
+  environ_get,
+  args_sizes_get,
+  args_get,
+  path_open,
+  oflags,
+  rights,
+  lookupflags,
+  fd,
+  fdflags,
+  fd_close,
 } from './wasi_unstable';
 
 export type Descriptor = fd;
@@ -285,17 +301,26 @@ export class Random {
   }
 }
 
-const __WASI_CLOCK_REALTIME: u32 = 0;
 export class Date {
   /**
    * Return the current timestamp, as a number of milliseconds since the epoch
    */
   static now(): f64 {
     let time_ptr = memory.allocate(8);
-    clock_time_get(__WASI_CLOCK_REALTIME, 1000, time_ptr);
+    clock_time_get(clockid.REALTIME, 1000, time_ptr);
     let unix_ts = load<u64>(time_ptr);
     memory.free(time_ptr);
     return unix_ts as f64 / 1000.0;
+  }
+}
+
+export class Performance {
+  static now(): f64 {
+    let time_ptr = memory.allocate(8);
+    clock_res_get(clockid.MONOTONIC, time_ptr);
+    let res_ts = load<u64>(time_ptr);
+    memory.free(time_ptr);
+    return res_ts as f64;
   }
 }
 
