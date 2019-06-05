@@ -57,7 +57,6 @@ export class Filesystem {
       return InvalidDescriptor;
     }
     let fd = load<u32>(fd_buf);
-    __release(fd_buf);
 
     return fd as Descriptor;
   }
@@ -96,7 +95,6 @@ export class Filesystem {
       return InvalidDescriptor;
     }
     let fd = load<u32>(fd_buf);
-    __release(fd_buf);
 
     return fd as Descriptor;
   }
@@ -128,8 +126,6 @@ export class IO {
 
     let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_write(fd, iov, 1, written_ptr);
-    __release(written_ptr);
-    __release(data_buf);
   }
 
   /**
@@ -150,8 +146,6 @@ export class IO {
     store<u32>(iov + sizeof<usize>(), s_utf8_len);
     let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_write(fd, iov, 1, written_ptr);
-    __release(written_ptr);
-    __release(s_utf8);
   }
 
   /**
@@ -171,8 +165,6 @@ export class IO {
     store<u32>(iov + sizeof<usize>() * 3, 1);
     let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_write(fd, iov, 2, written_ptr);
-    __release(written_ptr);
-    __release(s_utf8);
   }
 
   /**
@@ -199,9 +191,6 @@ export class IO {
         data.push(load<u8>(data_partial + i));
       }
     }
-    __release(read_ptr);
-    __release(data_partial);
-
     if (read <= 0) {
       return null;
     }
@@ -226,7 +215,7 @@ export class IO {
     store<u32>(iov + sizeof<usize>(), data_partial_len);
     let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     let read: usize = 0;
-    for (;;) {
+    for (; ;) {
       if (fd_read(fd, iov, 1, read_ptr) != errno.SUCCESS) {
         break;
       }
@@ -238,9 +227,6 @@ export class IO {
         data.push(load<u8>(data_partial + i));
       }
     }
-    __release(read_ptr);
-    __release(data_partial);
-
     if (read < 0) {
       return null;
     }
@@ -264,7 +250,6 @@ export class IO {
       store<u8>(s_utf8_buf + i, s_utf8[i]);
     }
     let s = String.fromUTF8(s_utf8_buf, s_utf8.length);
-    __release(s_utf8_buf);
 
     return s;
   }
@@ -342,7 +327,7 @@ export class Date {
     let time_ptr = changetype<usize>(new ArrayBuffer(8));
     clock_time_get(clockid.REALTIME, 1000, time_ptr);
     let unix_ts = load<u64>(time_ptr);
-    __release(time_ptr);
+
     return (unix_ts as f64) / 1000.0;
   }
 }
@@ -352,7 +337,7 @@ export class Performance {
     let time_ptr = changetype<usize>(new ArrayBuffer(8));
     clock_res_get(clockid.MONOTONIC, time_ptr);
     let res_ts = load<u64>(time_ptr);
-    __release(time_ptr);
+
     return res_ts as f64;
   }
 }
@@ -368,7 +353,7 @@ export class Process {
 }
 
 export class EnvironEntry {
-  constructor(readonly key: string, readonly value: string) {}
+  constructor(readonly key: string, readonly value: string) { }
 }
 
 export class Environ {
@@ -399,8 +384,6 @@ export class Environ {
       let value = env_ptr_split[1];
       this.env.push(new EnvironEntry(key, value));
     }
-    __release(buf);
-    __release(env_ptrs);
   }
 
   /**
@@ -450,8 +433,6 @@ export class CommandLine {
       let arg = StringUtils.fromCString(env_ptr);
       this.args.push(arg);
     }
-    __release(buf);
-    __release(env_ptrs);
   }
 
   /**
