@@ -1,13 +1,12 @@
 {
   "scripts": {
-    "asbuild:untouched": "asc assembly/index.ts assembly/wasa.ts -b build/untouched.wasm",
-    "asbuild:small": "asc assembly/index.ts assembly/wasa.ts -b build/small.wasm -t build/small.wat -O3z",
-    "asbuild:optimized": "asc assembly/index.ts assembly/wasa.ts -b build/optimized.wasm -t build/optimized.wat -O3",
-    "asbuild": "npm run asbuild:optimized",
-    "test": "asp"
+    "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --validate --debug",
+    "asbuild:small": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --validate -O3z",
+    "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --validate -O3",
+    "asbuild": "npm run asbuild:optimized"
   },
   "devDependencies": {
     "as-pect": "github:jtenner/as-pect",
-    "assemblyscript": "github:AssemblyScript/assemblyscript"
+    "assemblyscript": "github:AssemblyScript/assemblyscript#dev"
   }
 }

@@ -19,10 +19,12 @@ import {
   lookupflags,
   fd,
   fdflags,
-  fd_close,
-} from 'bindings/wasi';
+  fd_close
+} from "bindings/wasi";
 
 export type Descriptor = fd;
+
+export const InvalidDescriptor: Descriptor = -1;
 
 export class Filesystem {
   /**
@@ -30,49 +32,71 @@ export class Filesystem {
    * @param path Path
    * @param dirfd Base directory descriptor (will be automatically set soon)
    */
-  static openForRead(path: string, dirfd: Descriptor = 3): Descriptor | null {
+  static openForRead(path: string, dirfd: Descriptor = 3): Descriptor {
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let fd_oflags: oflags = 0;
-    let fd_rights = rights.FD_READ | rights.FD_SEEK |
-      rights.FD_TELL | rights.FD_FILESTAT_GET;
+    let fd_rights =
+      rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET;
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
     let path_utf8_len: usize = path.lengthUTF8 - 1;
     let path_utf8 = path.toUTF8();
-    let fd_buf = memory.allocate(sizeof<u32>());
-    let res = path_open(dirfd as fd, fd_lookup_flags, path_utf8, path_utf8_len,
-      fd_oflags, fd_rights, fd_rights_inherited, fd_flags, fd_buf);
+    let fd_buf = changetype<usize>(new ArrayBuffer(sizeof<u32>()));
+    let res = path_open(
+      dirfd as fd,
+      fd_lookup_flags,
+      path_utf8,
+      path_utf8_len,
+      fd_oflags,
+      fd_rights,
+      fd_rights_inherited,
+      fd_flags,
+      fd_buf
+    );
     if (res != errno.SUCCESS) {
-      return null;
+      return InvalidDescriptor;
     }
     let fd = load<u32>(fd_buf);
-    memory.free(fd_buf);
+    __release(fd_buf);
 
     return fd as Descriptor;
   }
 
   /**
-  * A simplified interface to open a file for write operations
-  * @param path Path
-  * @param dirfd Base directory descriptor (will be automatically set soon)
-  */
-  static openForWrite(path: string, dirfd: Descriptor = 3): Descriptor | null {
+   * A simplified interface to open a file for write operations
+   * @param path Path
+   * @param dirfd Base directory descriptor (will be automatically set soon)
+   */
+  static openForWrite(path: string, dirfd: Descriptor = 3): Descriptor {
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let fd_oflags: oflags = oflags.CREAT;
-    let fd_rights = rights.FD_WRITE | rights.FD_SEEK |
-      rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
+    let fd_rights =
+      rights.FD_WRITE |
+      rights.FD_SEEK |
+      rights.FD_TELL |
+      rights.FD_FILESTAT_GET |
+      rights.PATH_CREATE_FILE;
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
     let path_utf8_len: usize = path.lengthUTF8 - 1;
     let path_utf8 = path.toUTF8();
-    let fd_buf = memory.allocate(sizeof<u32>());
-    let res = path_open(dirfd as fd, fd_lookup_flags, path_utf8, path_utf8_len,
-      fd_oflags, fd_rights, fd_rights_inherited, fd_flags, fd_buf);
+    let fd_buf = changetype<usize>(new ArrayBuffer(sizeof<u32>()));
+    let res = path_open(
+      dirfd as fd,
+      fd_lookup_flags,
+      path_utf8,
+      path_utf8_len,
+      fd_oflags,
+      fd_rights,
+      fd_rights_inherited,
+      fd_flags,
+      fd_buf
+    );
     if (res != errno.SUCCESS) {
-      return null;
+      return InvalidDescriptor;
     }
     let fd = load<u32>(fd_buf);
-    memory.free(fd_buf);
+    __release(fd_buf);
 
     return fd as Descriptor;
   }
@@ -94,17 +118,18 @@ export class IO {
    */
   static write(fd: Descriptor, data: Array<u8>): void {
     let data_buf_len = data.length;
-    let data_buf = memory.allocate(data_buf_len);
+    let data_buf = changetype<usize>(new ArrayBuffer(data_buf_len));
     for (let i = 0; i < data_buf_len; i++) {
       store<u8>(data_buf + i, unchecked(data[i]));
     }
-    let iov = memory.allocate(2 * sizeof<usize>());
+    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
     store<u32>(iov, data_buf);
     store<u32>(iov + sizeof<usize>(), data_buf_len);
-    let written_ptr = memory.allocate(sizeof<usize>());
+
+    let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_write(fd, iov, 1, written_ptr);
-    memory.free(written_ptr);
-    memory.free(data_buf);
+    __release(written_ptr);
+    __release(data_buf);
   }
 
   /**
@@ -120,13 +145,13 @@ export class IO {
     }
     let s_utf8_len: usize = s.lengthUTF8 - 1;
     let s_utf8 = s.toUTF8();
-    let iov = memory.allocate(2 * sizeof<usize>());
+    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
     store<u32>(iov, s_utf8);
     store<u32>(iov + sizeof<usize>(), s_utf8_len);
-    let written_ptr = memory.allocate(sizeof<usize>());
+    let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_write(fd, iov, 1, written_ptr);
-    memory.free(written_ptr);
-    memory.free(s_utf8);
+    __release(written_ptr);
+    __release(s_utf8);
   }
 
   /**
@@ -137,17 +162,17 @@ export class IO {
   static writeStringLn(fd: Descriptor, s: string): void {
     let s_utf8_len: usize = s.lengthUTF8 - 1;
     let s_utf8 = s.toUTF8();
-    let iov = memory.allocate(4 * sizeof<usize>());
+    let iov = changetype<usize>(new ArrayBuffer(4 * sizeof<usize>()));
     store<u32>(iov, s_utf8);
     store<u32>(iov + sizeof<usize>(), s_utf8_len);
-    let lf = memory.allocate(1);
+    let lf = changetype<usize>(new ArrayBuffer(1));
     store<u8>(lf, 10);
     store<u32>(iov + sizeof<usize>() * 2, lf);
     store<u32>(iov + sizeof<usize>() * 3, 1);
-    let written_ptr = memory.allocate(sizeof<usize>());
+    let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_write(fd, iov, 2, written_ptr);
-    memory.free(written_ptr);
-    memory.free(s_utf8);
+    __release(written_ptr);
+    __release(s_utf8);
   }
 
   /**
@@ -156,13 +181,17 @@ export class IO {
    * @param data existing array to push data to
    * @param chunk_size chunk size (default: 4096)
    */
-  static read(fd: Descriptor, data: Array<u8> = [], chunk_size: usize = 4096): Array<u8> | null {
+  static read(
+    fd: Descriptor,
+    data: Array<u8> = [],
+    chunk_size: usize = 4096
+  ): Array<u8> | null {
     let data_partial_len = chunk_size;
-    let data_partial = memory.allocate(data_partial_len);
-    let iov = memory.allocate(2 * sizeof<usize>());
+    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
+    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
     store<u32>(iov, data_partial);
     store<u32>(iov + sizeof<usize>(), data_partial_len);
-    let read_ptr = memory.allocate(sizeof<usize>());
+    let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     fd_read(fd, iov, 1, read_ptr);
     let read = load<usize>(read_ptr);
     if (read > 0) {
@@ -170,8 +199,8 @@ export class IO {
         data.push(load<u8>(data_partial + i));
       }
     }
-    memory.free(read_ptr);
-    memory.free(data_partial);
+    __release(read_ptr);
+    __release(data_partial);
 
     if (read <= 0) {
       return null;
@@ -185,15 +214,19 @@ export class IO {
    * @param data existing array to push data to
    * @param chunk_size chunk size (default: 4096)
    */
-  static readAll(fd: Descriptor, data: Array<u8> = [], chunk_size: usize = 4096): Array<u8> | null {
+  static readAll(
+    fd: Descriptor,
+    data: Array<u8> = [],
+    chunk_size: usize = 4096
+  ): Array<u8> | null {
     let data_partial_len = chunk_size;
-    let data_partial = memory.allocate(data_partial_len);
-    let iov = memory.allocate(2 * sizeof<usize>());
+    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
+    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
     store<u32>(iov, data_partial);
     store<u32>(iov + sizeof<usize>(), data_partial_len);
-    let read_ptr = memory.allocate(sizeof<usize>());
+    let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     let read: usize = 0;
-    for (; ;) {
+    for (;;) {
       if (fd_read(fd, iov, 1, read_ptr) != errno.SUCCESS) {
         break;
       }
@@ -205,8 +238,8 @@ export class IO {
         data.push(load<u8>(data_partial + i));
       }
     }
-    memory.free(read_ptr);
-    memory.free(data_partial);
+    __release(read_ptr);
+    __release(data_partial);
 
     if (read < 0) {
       return null;
@@ -219,19 +252,19 @@ export class IO {
    * @param fd file descriptor
    * @param chunk_size chunk size (default: 4096)
    */
-  static readString(fd: Descriptor, chunk_size: usize = 4096): string | null {
-    let s_utf8_ = IO.readAll(fd);
-    if (s_utf8_ === null) {
+
+  static readString(fd: Descriptor, chunk_size: usize = 4096): string {
+    let s_utf8 = IO.readAll(fd);
+    if (s_utf8 === null) {
       return null;
     }
-    let s_utf8 = s_utf8_!;
     let s_utf8_len = s_utf8.length;
-    let s_utf8_buf = memory.allocate(s_utf8_len);
+    let s_utf8_buf = changetype<usize>(new ArrayBuffer(s_utf8_len));
     for (let i = 0; i < s_utf8_len; i++) {
       store<u8>(s_utf8_buf + i, s_utf8[i]);
     }
     let s = String.fromUTF8(s_utf8_buf, s_utf8.length);
-    memory.free(s_utf8_buf);
+    __release(s_utf8_buf);
 
     return s;
   }
@@ -279,7 +312,7 @@ export class Random {
    */
   static randomFill(buffer: ArrayBuffer): void {
     let len = buffer.byteLength;
-    let ptr = buffer.data;
+    let ptr = changetype<usize>(buffer);
     while (len > 0) {
       let chunk = min(len, 256);
       if (random_get(ptr, chunk) != errno.SUCCESS) {
@@ -306,20 +339,20 @@ export class Date {
    * Return the current timestamp, as a number of milliseconds since the epoch
    */
   static now(): f64 {
-    let time_ptr = memory.allocate(8);
+    let time_ptr = changetype<usize>(new ArrayBuffer(8));
     clock_time_get(clockid.REALTIME, 1000, time_ptr);
     let unix_ts = load<u64>(time_ptr);
-    memory.free(time_ptr);
-    return unix_ts as f64 / 1000.0;
+    __release(time_ptr);
+    return (unix_ts as f64) / 1000.0;
   }
 }
 
 export class Performance {
   static now(): f64 {
-    let time_ptr = memory.allocate(8);
+    let time_ptr = changetype<usize>(new ArrayBuffer(8));
     clock_res_get(clockid.MONOTONIC, time_ptr);
     let res_ts = load<u64>(time_ptr);
-    memory.free(time_ptr);
+    __release(time_ptr);
     return res_ts as f64;
   }
 }
@@ -330,12 +363,12 @@ export class Process {
    * @param status exit code
    */
   static exit(status: u32): void {
-    proc_exit(status)
+    proc_exit(status);
   }
 }
 
 export class EnvironEntry {
-  constructor(readonly key: string, readonly value: string) { };
+  constructor(readonly key: string, readonly value: string) {}
 }
 
 export class Environ {
@@ -343,15 +376,19 @@ export class Environ {
 
   constructor() {
     this.env = [];
-    let count_and_size = memory.allocate(2 * sizeof<usize>());
+    let count_and_size = changetype<usize>(
+      new ArrayBuffer(2 * sizeof<usize>())
+    );
     let ret = environ_sizes_get(count_and_size, count_and_size + 4);
     if (ret != errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size);
     let size = load<usize>(count_and_size + sizeof<usize>());
-    let env_ptrs = memory.allocate((count + 1) * sizeof<usize>());
-    let buf = memory.allocate(size);
+    let env_ptrs = changetype<usize>(
+      new ArrayBuffer((count + 1) * sizeof<usize>())
+    );
+    let buf = changetype<usize>(new ArrayBuffer(size));
     if (environ_get(env_ptrs, buf) != errno.SUCCESS) {
       abort();
     }
@@ -362,8 +399,8 @@ export class Environ {
       let value = env_ptr_split[1];
       this.env.push(new EnvironEntry(key, value));
     }
-    memory.free(buf);
-    memory.free(env_ptrs);
+    __release(buf);
+    __release(env_ptrs);
   }
 
   /**
@@ -392,15 +429,19 @@ export class CommandLine {
 
   constructor() {
     this.args = [];
-    let count_and_size = memory.allocate(2 * sizeof<usize>());
+    let count_and_size = changetype<usize>(
+      new ArrayBuffer(2 * sizeof<usize>())
+    );
     let ret = args_sizes_get(count_and_size, count_and_size + 4);
     if (ret != errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size);
     let size = load<usize>(count_and_size + sizeof<usize>());
-    let env_ptrs = memory.allocate((count + 1) * sizeof<usize>());
-    let buf = memory.allocate(size);
+    let env_ptrs = changetype<usize>(
+      new ArrayBuffer((count + 1) * sizeof<usize>())
+    );
+    let buf = changetype<usize>(new ArrayBuffer(size));
     if (args_get(env_ptrs, buf) != errno.SUCCESS) {
       abort();
     }
@@ -409,8 +450,8 @@ export class CommandLine {
       let arg = StringUtils.fromCString(env_ptr);
       this.args.push(arg);
     }
-    memory.free(buf);
-    memory.free(env_ptrs);
+    __release(buf);
+    __release(env_ptrs);
   }
 
   /**
