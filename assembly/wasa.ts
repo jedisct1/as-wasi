@@ -24,7 +24,6 @@ import {
   proc_exit,
   random_get,
   fd_close,
-
   advice,
   fd,
   fdflags,
@@ -36,7 +35,7 @@ import {
   oflags,
   rights,
   filetype,
-  filesize,
+  filesize
 } from "bindings/wasi";
 
 export type Descriptor = fd;
@@ -243,7 +242,7 @@ export class IO {
     store<u32>(iov + sizeof<usize>(), data_partial_len);
     let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     let read: usize = 0;
-    for (; ;) {
+    for (;;) {
       if (fd_read(fd, iov, 1, read_ptr) != errno.SUCCESS) {
         break;
       }
@@ -315,9 +314,9 @@ export class IO {
     let file_stat = new FileStat();
     file_stat.file_type = load<u8>(st_buf + 16);
     file_stat.file_size = load<u64>(st_buf + 24);
-    file_stat.access_time = load<u64>(st_buf + 32) as f64 / 1e9;
-    file_stat.modification_time = load<u64>(st_buf + 40) as f64 / 1e9;
-    file_stat.creation_time = load<u64>(st_buf + 48) as f64 / 1e9;
+    file_stat.access_time = (load<u64>(st_buf + 32) as f64) / 1e9;
+    file_stat.modification_time = (load<u64>(st_buf + 40) as f64) / 1e9;
+    file_stat.creation_time = (load<u64>(st_buf + 48) as f64) / 1e9;
 
     return file_stat;
   }
@@ -327,29 +326,44 @@ export class IO {
   }
 
   static setAccessTime(fd: Descriptor, ts: f64): bool {
-    return fd_filestat_set_times(fd,
-      (ts * 1e9) as u64, 0, fstflags.SET_ATIM) === errno.SUCCESS;
+    return (
+      fd_filestat_set_times(fd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
+      errno.SUCCESS
+    );
   }
 
   static setModificationTime(fd: Descriptor, ts: f64): bool {
-    return fd_filestat_set_times(fd,
-      0, (ts * 1e9) as u64, fstflags.SET_MTIM) === errno.SUCCESS;
+    return (
+      fd_filestat_set_times(fd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
+      errno.SUCCESS
+    );
   }
 
   static touch(fd: Descriptor): bool {
-    return fd_filestat_set_times(fd,
-      0, 0, fstflags.SET_ATIM_NOW | fstflags.SET_MTIM_NOW) === errno.SUCCESS;
+    return (
+      fd_filestat_set_times(
+        fd,
+        0,
+        0,
+        fstflags.SET_ATIM_NOW | fstflags.SET_MTIM_NOW
+      ) === errno.SUCCESS
+    );
   }
 
-  static dirName(fd: Descriptor): string {
+  static dirName(fd: Descriptor): String {
     let path_max: usize = 4096;
-    for (; ;) {
-      let path = changetype<usize>(new ArrayBuffer(path_max));
-      let ret = fd_prestat_dir_name(fd, path, path_max);
-      if (ret === errno.ENAMETOOLONG) {
+    for (;;) {
+      let path_buf = changetype<usize>(new ArrayBuffer(path_max));
+      let ret = fd_prestat_dir_name(fd, path_buf, path_max);
+      if (ret === errno.NAMETOOLONG) {
         path_max = path_max * 2;
         continue;
       }
+      let path_len = 0;
+      while (load<u8>(path_buf + path_len) != 0) {
+        path_len++;
+      }
+      return String.fromUTF8(path_buf, path_len);
     }
   }
 }
@@ -460,7 +474,7 @@ export class Process {
 }
 
 export class EnvironEntry {
-  constructor(readonly key: string, readonly value: string) { }
+  constructor(readonly key: string, readonly value: string) {}
 }
 
 export class Environ {
