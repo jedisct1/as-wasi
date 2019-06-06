@@ -1,30 +1,58 @@
 // The entry file of your WebAssembly module.
 
 import {
-  errno,
-  clockid,
-  fd_write,
-  fd_read,
-  random_get,
-  clock_time_get,
-  clock_res_get,
-  proc_exit,
-  environ_sizes_get,
-  environ_get,
-  args_sizes_get,
   args_get,
+  args_sizes_get,
+  clock_res_get,
+  clock_time_get,
+  clockid,
+  environ_get,
+  environ_sizes_get,
+  errno,
+  fd_advise,
+  fd_allocate,
+  fd_datasync,
+  fd_fdstat_get,
+  fd_fdstat_set_flags,
+  fd_filestat_get,
+  fd_filestat_set_size,
+  fd_filestat_set_times,
+  fd_prestat_dir_name,
+  fd_read,
+  fd_write,
   path_open,
-  oflags,
-  rights,
-  lookupflags,
+  proc_exit,
+  random_get,
+  fd_close,
+
+  advice,
   fd,
   fdflags,
-  fd_close
+  fdstat,
+  filestat,
+  filetype,
+  fstflags,
+  lookupflags,
+  oflags,
+  rights,
+  filetype,
+  filesize,
 } from "bindings/wasi";
 
 export type Descriptor = fd;
+export type FDStat = fdstat;
 
-export const InvalidDescriptor: Descriptor = -1;
+export const INVALID_DESCRIPTOR: Descriptor = -1;
+export const STDIN: Descriptor = 0;
+export const STDOUT: Descriptor = 1;
+export const STDERR: Descriptor = 2;
+
+export class WASAError extends Error {
+  constructor(message: string = "") {
+    super(message);
+    this.name = "WASAError";
+  }
+}
 
 export class Filesystem {
   /**
@@ -54,7 +82,7 @@ export class Filesystem {
       fd_buf
     );
     if (res != errno.SUCCESS) {
-      return InvalidDescriptor;
+      return INVALID_DESCRIPTOR;
     }
     let fd = load<u32>(fd_buf);
 
@@ -92,7 +120,7 @@ export class Filesystem {
       fd_buf
     );
     if (res != errno.SUCCESS) {
-      return InvalidDescriptor;
+      return INVALID_DESCRIPTOR;
     }
     let fd = load<u32>(fd_buf);
 
@@ -239,7 +267,7 @@ export class IO {
    * @param chunk_size chunk size (default: 4096)
    */
 
-  static readString(fd: Descriptor, chunk_size: usize = 4096): string {
+  static readString(fd: Descriptor, chunk_size: usize = 4096): string | null {
     let s_utf8 = IO.readAll(fd);
     if (s_utf8 === null) {
       return null;
@@ -253,6 +281,85 @@ export class IO {
 
     return s;
   }
+
+  static advise(fd: Descriptor, offset: u64, len: u64, advice: advice): bool {
+    return fd_advise(fd, offset, len, advice) === errno.SUCCESS;
+  }
+
+  static allocate(fd: Descriptor, offset: u64, len: u64): bool {
+    return fd_allocate(fd, offset, len) === errno.SUCCESS;
+  }
+
+  static dataSync(fd: Descriptor): bool {
+    return fd_datasync(fd) === errno.SUCCESS;
+  }
+
+  static fileType(fd: Descriptor): filetype {
+    let st_buf = changetype<usize>(new ArrayBuffer(24));
+    if (fd_fdstat_get(fd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
+      throw new WASAError("Unable to get the file type");
+    }
+    let file_type: u8 = load<u8>(st_buf);
+    return file_type;
+  }
+
+  static setFlags(fd: Descriptor, flags: fdflags): bool {
+    return fd_fdstat_set_flags(fd, flags) === errno.SUCCESS;
+  }
+
+  static fileStat(fd: Descriptor): FileStat {
+    let st_buf = changetype<usize>(new ArrayBuffer(56));
+    if (fd_filestat_get(fd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
+      throw new WASAError("Unable to get the file information");
+    }
+    let file_stat = new FileStat();
+    file_stat.file_type = load<u8>(st_buf + 16);
+    file_stat.file_size = load<u64>(st_buf + 24);
+    file_stat.access_time = load<u64>(st_buf + 32) as f64 / 1e9;
+    file_stat.modification_time = load<u64>(st_buf + 40) as f64 / 1e9;
+    file_stat.creation_time = load<u64>(st_buf + 48) as f64 / 1e9;
+
+    return file_stat;
+  }
+
+  static setSize(fd: Descriptor, size: u64): bool {
+    return fd_filestat_set_size(fd, size) === errno.SUCCESS;
+  }
+
+  static setAccessTime(fd: Descriptor, ts: f64): bool {
+    return fd_filestat_set_times(fd,
+      (ts * 1e9) as u64, 0, fstflags.SET_ATIM) === errno.SUCCESS;
+  }
+
+  static setModificationTime(fd: Descriptor, ts: f64): bool {
+    return fd_filestat_set_times(fd,
+      0, (ts * 1e9) as u64, fstflags.SET_MTIM) === errno.SUCCESS;
+  }
+
+  static touch(fd: Descriptor): bool {
+    return fd_filestat_set_times(fd,
+      0, 0, fstflags.SET_ATIM_NOW | fstflags.SET_MTIM_NOW) === errno.SUCCESS;
+  }
+
+  static dirName(fd: Descriptor): string {
+    let path_max: usize = 4096;
+    for (; ;) {
+      let path = changetype<usize>(new ArrayBuffer(path_max));
+      let ret = fd_prestat_dir_name(fd, path, path_max);
+      if (ret === errno.ENAMETOOLONG) {
+        path_max = path_max * 2;
+        continue;
+      }
+    }
+  }
+}
+
+export class FileStat {
+  file_type: filetype;
+  file_size: filesize;
+  access_time: f64;
+  modification_time: f64;
+  creation_time: f64;
 }
 
 @global
@@ -263,14 +370,14 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static write(s: string, newline: bool = true): void {
-    IO.writeString(1, s, newline);
+    IO.writeString(STDOUT, s, newline);
   }
 
   /**
    * Read an UTF8 string from the console, convert it to a native string
    */
   static readAll(): string | null {
-    return IO.readString(0);
+    return IO.readString(STDIN);
   }
 
   /**
@@ -286,7 +393,7 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static error(s: string, newline: bool = true): void {
-    IO.writeString(2, s, newline);
+    IO.writeString(STDERR, s, newline);
   }
 }
 
@@ -463,4 +570,15 @@ class StringUtils {
     }
     return String.fromUTF8(cstring, size);
   }
+}
+
+@global
+export function wasi_abort(
+  message: string | null = "",
+  _fileName: string | null = "",
+  _lineNumber: u32 = 0,
+  _columnNumber: u32 = 0
+): void {
+  Console.error(message!);
+  proc_exit(255);
 }
