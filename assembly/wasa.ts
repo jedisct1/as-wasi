@@ -387,14 +387,14 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static write(s: string, newline: bool = true): void {
-    Descriptor.Stdout().writeString(s, newline);
+    STDOUT.writeString(s, newline);
   }
 
   /**
    * Read an UTF8 string from the console, convert it to a native string
    */
   static readAll(): string | null {
-    return Descriptor.Stdin().readString();
+    return STDIN.readString();
   }
 
   /**
@@ -410,7 +410,7 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static error(s: string, newline: bool = true): void {
-    Descriptor.Stderr().writeString(s, newline);
+    STDERR.writeString(s, newline);
   }
 }
 
