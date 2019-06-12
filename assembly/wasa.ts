@@ -21,6 +21,7 @@ import {
   fd_filestat_set_times,
   fd_prestat_dir_name,
   fd_read,
+  fd_sync,
   fd_write,
   fd,
   fdflags,
@@ -33,7 +34,9 @@ import {
   oflags,
   path_create_directory,
   path_filestat_get,
+  path_link,
   path_open,
+  path_symlink,
   proc_exit,
   random_get,
   rights,
@@ -72,8 +75,12 @@ export class Descriptor {
     return fd_allocate(this.rawfd, offset, len) === errno.SUCCESS;
   }
 
-  dataSync(): bool {
+  fdatasync(): bool {
     return fd_datasync(this.rawfd) === errno.SUCCESS;
+  }
+
+  fsync(): bool {
+    return fd_sync(this.rawfd) === errno.SUCCESS;
   }
 
   fileType(): filetype {
@@ -105,21 +112,28 @@ export class Descriptor {
     return file_stat;
   }
 
-  setSize(size: u64): bool {
+  ftruncate(size: u64 = 0): bool {
     return fd_filestat_set_size(this.rawfd, size) === errno.SUCCESS;
   }
 
-  setAccessTime(ts: f64): bool {
+  fatime(ts: f64): bool {
     return (
       fd_filestat_set_times(this.rawfd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
       errno.SUCCESS
     );
   }
 
-  setModificationTime(ts: f64): bool {
+  fmtime(ts: f64): bool {
     return (
       fd_filestat_set_times(this.rawfd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
       errno.SUCCESS
+    );
+  }
+
+  futimes(atime: f64, mtime: f64): bool {
+    return (
+      fd_filestat_set_times(this.rawfd, (atime * 1e9) as u64, (mtime * 1e9) as u64,
+        fstflags.SET_ATIM | fstflags.SET_ATIM) === errno.SUCCESS
     );
   }
 
@@ -364,6 +378,7 @@ export class FileSystem {
     let path_utf8_len: usize = path.lengthUTF8 - 1;
     let path_utf8 = path.toUTF8();
     let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
+
     return res === errno.SUCCESS;
   }
 
@@ -373,7 +388,35 @@ export class FileSystem {
     let path_utf8 = path.toUTF8();
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
-    let res = path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len, changetype<filestat>(st_buf));
+    let res = path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len,
+      changetype<filestat>(st_buf));
+
+    return res === errno.SUCCESS;
+  }
+
+  static link(old_path: string, new_path: string): bool {
+    let old_dirfd = this.dirfdForPath(old_path);
+    let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
+    let old_path_utf8 = old_path.toUTF8();
+    let new_dirfd = this.dirfdForPath(new_path);
+    let new_path_utf8_len: usize = new_path.lengthUTF8 - 1;
+    let new_path_utf8 = new_path.toUTF8();
+    let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
+    let res = path_link(old_dirfd, fd_lookup_flags, old_path_utf8, old_path_utf8_len,
+      new_dirfd, new_path_utf8, new_path_utf8_len);
+
+    return res === errno.SUCCESS;
+  }
+
+  static symlink(old_path: string, new_path: string): bool {
+    let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
+    let old_path_utf8 = old_path.toUTF8();
+    let new_dirfd = this.dirfdForPath(new_path);
+    let new_path_utf8_len: usize = new_path.lengthUTF8 - 1;
+    let new_path_utf8 = new_path.toUTF8();
+    let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
+    let res = path_symlink(old_path_utf8, old_path_utf8_len,
+      new_dirfd, new_path_utf8, new_path_utf8_len);
 
     return res === errno.SUCCESS;
   }
@@ -532,7 +575,7 @@ export class Environ {
 }
 
 export class CommandLine {
-  args: Array<String>;
+  args: Array<string>;
 
   constructor() {
     this.args = [];
@@ -562,7 +605,7 @@ export class CommandLine {
   /**
    * Return all the command-line arguments
    */
-  all(): Array<String> {
+  all(): Array<string> {
     return this.args;
   }
 
