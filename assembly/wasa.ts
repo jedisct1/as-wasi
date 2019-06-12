@@ -33,6 +33,7 @@ import {
   fstflags,
   lookupflags,
   oflags,
+  path_create_directory,
   rights,
   filetype,
   filesize
@@ -80,7 +81,7 @@ export class Filesystem {
       fd_flags,
       fd_buf
     );
-    if (res != errno.SUCCESS) {
+    if (res !== errno.SUCCESS) {
       return INVALID_DESCRIPTOR;
     }
     let fd = load<u32>(fd_buf);
@@ -242,7 +243,7 @@ export class IO {
     store<u32>(iov + sizeof<usize>(), data_partial_len);
     let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     let read: usize = 0;
-    for (;;) {
+    for (; ;) {
       if (fd_read(fd, iov, 1, read_ptr) != errno.SUCCESS) {
         break;
       }
@@ -352,7 +353,7 @@ export class IO {
 
   static dirName(fd: Descriptor): String {
     let path_max: usize = 4096;
-    for (;;) {
+    for (; ;) {
       let path_buf = changetype<usize>(new ArrayBuffer(path_max));
       let ret = fd_prestat_dir_name(fd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
@@ -365,6 +366,13 @@ export class IO {
       }
       return String.fromUTF8(path_buf, path_len);
     }
+  }
+
+  static mkdir(path: string, dirfd: Descriptor = 3): bool {
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
+    return res === errno.SUCCESS;
   }
 }
 
@@ -474,7 +482,7 @@ export class Process {
 }
 
 export class EnvironEntry {
-  constructor(readonly key: string, readonly value: string) {}
+  constructor(readonly key: string, readonly value: string) { }
 }
 
 export class Environ {
