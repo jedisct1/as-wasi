@@ -1,11 +1,13 @@
 import {
+  INVALID_DESCRIPTOR, STDIN, STDOUT, STDERR,
   Descriptor, FDStat,
-  IO, Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
+  Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
 } from "./wasa";
 
 export {
+  INVALID_DESCRIPTOR, STDIN, STDOUT, STDERR,
   Descriptor, FDStat,
-  IO, Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
+  Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
 };
 
 // turn into export
@@ -14,12 +16,13 @@ import {
 } from "bindings/wasi";
 
 Console.error("test");
-FileSystem.advise(new Descriptor(1), 2, 3, Advice.DONTNEED);
+let fd = new Descriptor(1);
+fd.advise(2, 3, Advice.DONTNEED);
 
-let st = FileSystem.fileType(Descriptor.Stdin());
+let st = STDIN.fileType();
 Console.log(st.toString());
 
-FileSystem.setFlags(Descriptor.Stdout(), FDFlags.SYNC);
+STDOUT.setFlags(FDFlags.SYNC);
 
-let x = FileSystem.fileStat(Descriptor.Stdout());
+let x = STDOUT.fileStat();
 Console.log(x.creation_time.toString());
