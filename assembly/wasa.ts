@@ -34,6 +34,7 @@ import {
   lookupflags,
   oflags,
   path_create_directory,
+  path_filestat_get,
   rights,
   filetype,
   filesize
@@ -54,55 +55,41 @@ export class WASAError extends Error {
   }
 }
 
-export class Filesystem {
-  /**
-   * A simplified interface to open a file for read operations
-   * @param path Path
-   * @param dirfd Base directory descriptor (will be automatically set soon)
-   */
-  static openForRead(path: string, dirfd: Descriptor = 3): Descriptor {
-    let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
-    let fd_oflags: oflags = 0;
-    let fd_rights =
-      rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET;
-    let fd_rights_inherited = fd_rights;
-    let fd_flags: fdflags = 0;
-    let path_utf8_len: usize = path.lengthUTF8 - 1;
-    let path_utf8 = path.toUTF8();
-    let fd_buf = changetype<usize>(new ArrayBuffer(sizeof<u32>()));
-    let res = path_open(
-      dirfd as fd,
-      fd_lookup_flags,
-      path_utf8,
-      path_utf8_len,
-      fd_oflags,
-      fd_rights,
-      fd_rights_inherited,
-      fd_flags,
-      fd_buf
-    );
-    if (res !== errno.SUCCESS) {
-      return INVALID_DESCRIPTOR;
-    }
-    let fd = load<u32>(fd_buf);
-
-    return fd as Descriptor;
+export class FileSystem {
+  protected static dirfdForPath(path: string): Descriptor {
+    return 3;
   }
 
-  /**
-   * A simplified interface to open a file for write operations
-   * @param path Path
-   * @param dirfd Base directory descriptor (will be automatically set soon)
-   */
-  static openForWrite(path: string, dirfd: Descriptor = 3): Descriptor {
+  static open(path: string, flags: string = "r"): Descriptor {
+    let dirfd = this.dirfdForPath(path);
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
-    let fd_oflags: oflags = oflags.CREAT;
-    let fd_rights =
-      rights.FD_WRITE |
-      rights.FD_SEEK |
-      rights.FD_TELL |
-      rights.FD_FILESTAT_GET |
-      rights.PATH_CREATE_FILE;
+    let fd_oflags: u16 = 0;
+    let fd_rights: u64 = 0;
+    if (flags === "r") {
+      fd_rights = rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET;
+    } else if (flags === "r+") {
+      fd_rights =
+        rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_WRITE |
+        rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
+    } else if (flags === "w") {
+      fd_oflags = oflags.CREAT | oflags.TRUNC;
+      fd_rights = rights.FD_WRITE | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
+    } else if (flags === "wx") {
+      fd_oflags = oflags.CREAT | oflags.TRUNC | oflags.EXCL;
+      fd_rights = rights.FD_WRITE | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
+    } else if (flags === "w+") {
+      fd_oflags = oflags.CREAT | oflags.TRUNC;
+      fd_rights =
+        rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_WRITE |
+        rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
+    } else if (flags === "xw+") {
+      fd_oflags = oflags.CREAT | oflags.TRUNC | oflags.EXCL;
+      fd_rights =
+        rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_WRITE |
+        rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
+    } else {
+      return INVALID_DESCRIPTOR;
+    }
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -125,6 +112,112 @@ export class Filesystem {
     let fd = load<u32>(fd_buf);
 
     return fd as Descriptor;
+  }
+
+
+  static advise(fd: Descriptor, offset: u64, len: u64, advice: advice): bool {
+    return fd_advise(fd, offset, len, advice) === errno.SUCCESS;
+  }
+
+  static allocate(fd: Descriptor, offset: u64, len: u64): bool {
+    return fd_allocate(fd, offset, len) === errno.SUCCESS;
+  }
+
+  static dataSync(fd: Descriptor): bool {
+    return fd_datasync(fd) === errno.SUCCESS;
+  }
+
+  static fileType(fd: Descriptor): filetype {
+    let st_buf = changetype<usize>(new ArrayBuffer(24));
+    if (fd_fdstat_get(fd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
+      throw new WASAError("Unable to get the file type");
+    }
+    let file_type: u8 = load<u8>(st_buf);
+    return file_type;
+  }
+
+  static setFlags(fd: Descriptor, flags: fdflags): bool {
+    return fd_fdstat_set_flags(fd, flags) === errno.SUCCESS;
+  }
+
+  static fileStat(fd: Descriptor): FileStat {
+    let st_buf = changetype<usize>(new ArrayBuffer(56));
+    if (fd_filestat_get(fd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
+      throw new WASAError("Unable to get the file information");
+    }
+    let file_stat = new FileStat();
+    file_stat.file_type = load<u8>(st_buf + 16);
+    file_stat.file_size = load<u64>(st_buf + 24);
+    file_stat.access_time = (load<u64>(st_buf + 32) as f64) / 1e9;
+    file_stat.modification_time = (load<u64>(st_buf + 40) as f64) / 1e9;
+    file_stat.creation_time = (load<u64>(st_buf + 48) as f64) / 1e9;
+
+    return file_stat;
+  }
+
+  static setSize(fd: Descriptor, size: u64): bool {
+    return fd_filestat_set_size(fd, size) === errno.SUCCESS;
+  }
+
+  static setAccessTime(fd: Descriptor, ts: f64): bool {
+    return (
+      fd_filestat_set_times(fd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
+      errno.SUCCESS
+    );
+  }
+
+  static setModificationTime(fd: Descriptor, ts: f64): bool {
+    return (
+      fd_filestat_set_times(fd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
+      errno.SUCCESS
+    );
+  }
+
+  static touch(fd: Descriptor): bool {
+    return (
+      fd_filestat_set_times(
+        fd,
+        0,
+        0,
+        fstflags.SET_ATIM_NOW | fstflags.SET_MTIM_NOW
+      ) === errno.SUCCESS
+    );
+  }
+
+  static dirName(fd: Descriptor): String {
+    let path_max: usize = 4096;
+    for (; ;) {
+      let path_buf = changetype<usize>(new ArrayBuffer(path_max));
+      let ret = fd_prestat_dir_name(fd, path_buf, path_max);
+      if (ret === errno.NAMETOOLONG) {
+        path_max = path_max * 2;
+        continue;
+      }
+      let path_len = 0;
+      while (load<u8>(path_buf + path_len) != 0) {
+        path_len++;
+      }
+      return String.fromUTF8(path_buf, path_len);
+    }
+  }
+
+  static mkdir(path: string): bool {
+    let dirfd = this.dirfdForPath(path);
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
+    return res === errno.SUCCESS;
+  }
+
+  static exists(path: string): bool {
+    let dirfd = this.dirfdForPath(path);
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
+    let st_buf = changetype<usize>(new ArrayBuffer(56));
+    let res = path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len, changetype<filestat>(st_buf));
+
+    return res === errno.SUCCESS;
   }
 }
 
@@ -280,99 +373,6 @@ export class IO {
     let s = String.fromUTF8(s_utf8_buf, s_utf8.length);
 
     return s;
-  }
-
-  static advise(fd: Descriptor, offset: u64, len: u64, advice: advice): bool {
-    return fd_advise(fd, offset, len, advice) === errno.SUCCESS;
-  }
-
-  static allocate(fd: Descriptor, offset: u64, len: u64): bool {
-    return fd_allocate(fd, offset, len) === errno.SUCCESS;
-  }
-
-  static dataSync(fd: Descriptor): bool {
-    return fd_datasync(fd) === errno.SUCCESS;
-  }
-
-  static fileType(fd: Descriptor): filetype {
-    let st_buf = changetype<usize>(new ArrayBuffer(24));
-    if (fd_fdstat_get(fd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
-      throw new WASAError("Unable to get the file type");
-    }
-    let file_type: u8 = load<u8>(st_buf);
-    return file_type;
-  }
-
-  static setFlags(fd: Descriptor, flags: fdflags): bool {
-    return fd_fdstat_set_flags(fd, flags) === errno.SUCCESS;
-  }
-
-  static fileStat(fd: Descriptor): FileStat {
-    let st_buf = changetype<usize>(new ArrayBuffer(56));
-    if (fd_filestat_get(fd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
-      throw new WASAError("Unable to get the file information");
-    }
-    let file_stat = new FileStat();
-    file_stat.file_type = load<u8>(st_buf + 16);
-    file_stat.file_size = load<u64>(st_buf + 24);
-    file_stat.access_time = (load<u64>(st_buf + 32) as f64) / 1e9;
-    file_stat.modification_time = (load<u64>(st_buf + 40) as f64) / 1e9;
-    file_stat.creation_time = (load<u64>(st_buf + 48) as f64) / 1e9;
-
-    return file_stat;
-  }
-
-  static setSize(fd: Descriptor, size: u64): bool {
-    return fd_filestat_set_size(fd, size) === errno.SUCCESS;
-  }
-
-  static setAccessTime(fd: Descriptor, ts: f64): bool {
-    return (
-      fd_filestat_set_times(fd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
-      errno.SUCCESS
-    );
-  }
-
-  static setModificationTime(fd: Descriptor, ts: f64): bool {
-    return (
-      fd_filestat_set_times(fd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
-      errno.SUCCESS
-    );
-  }
-
-  static touch(fd: Descriptor): bool {
-    return (
-      fd_filestat_set_times(
-        fd,
-        0,
-        0,
-        fstflags.SET_ATIM_NOW | fstflags.SET_MTIM_NOW
-      ) === errno.SUCCESS
-    );
-  }
-
-  static dirName(fd: Descriptor): String {
-    let path_max: usize = 4096;
-    for (; ;) {
-      let path_buf = changetype<usize>(new ArrayBuffer(path_max));
-      let ret = fd_prestat_dir_name(fd, path_buf, path_max);
-      if (ret === errno.NAMETOOLONG) {
-        path_max = path_max * 2;
-        continue;
-      }
-      let path_len = 0;
-      while (load<u8>(path_buf + path_len) != 0) {
-        path_len++;
-      }
-      return String.fromUTF8(path_buf, path_len);
-    }
-  }
-
-  static mkdir(path: string, dirfd: Descriptor = 3): bool {
-    let path_utf8_len: usize = path.lengthUTF8 - 1;
-    let path_utf8 = path.toUTF8();
-    let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
-    return res === errno.SUCCESS;
   }
 }
 
