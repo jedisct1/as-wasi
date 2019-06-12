@@ -1,6 +1,7 @@
 // The entry file of your WebAssembly module.
 
 import {
+  advice,
   args_get,
   args_sizes_get,
   clock_res_get,
@@ -11,6 +12,7 @@ import {
   errno,
   fd_advise,
   fd_allocate,
+  fd_close,
   fd_datasync,
   fd_fdstat_get,
   fd_fdstat_set_flags,
@@ -20,14 +22,10 @@ import {
   fd_prestat_dir_name,
   fd_read,
   fd_write,
-  path_open,
-  proc_exit,
-  random_get,
-  fd_close,
-  advice,
   fd,
   fdflags,
   fdstat,
+  filesize,
   filestat,
   filetype,
   fstflags,
@@ -35,18 +33,13 @@ import {
   oflags,
   path_create_directory,
   path_filestat_get,
+  path_open,
+  proc_exit,
+  random_get,
   rights,
-  filetype,
-  filesize
 } from "bindings/wasi";
 
-export type Descriptor = fd;
 export type FDStat = fdstat;
-
-export const INVALID_DESCRIPTOR: Descriptor = -1;
-export const STDIN: Descriptor = 0;
-export const STDOUT: Descriptor = 1;
-export const STDERR: Descriptor = 2;
 
 export class WASAError extends Error {
   constructor(message: string = "") {
@@ -55,8 +48,17 @@ export class WASAError extends Error {
   }
 }
 
+export class Descriptor {
+  static Invalid(): Descriptor { return new Descriptor(-1); };
+  static Stdin(): Descriptor { return new Descriptor(0); };
+  static Stdout(): Descriptor { return new Descriptor(1); };
+  static Stderr(): Descriptor { return new Descriptor(2); };
+
+  constructor(readonly rawfd: fd) { }
+}
+
 export class FileSystem {
-  protected static dirfdForPath(path: string): Descriptor {
+  protected static dirfdForPath(path: string): fd {
     return 3;
   }
 
@@ -88,7 +90,7 @@ export class FileSystem {
         rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_WRITE |
         rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
     } else {
-      return INVALID_DESCRIPTOR;
+      return Descriptor.Invalid();
     }
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
@@ -106,43 +108,44 @@ export class FileSystem {
       fd_flags,
       fd_buf
     );
-    if (res != errno.SUCCESS) {
-      return INVALID_DESCRIPTOR;
+    if (res !== errno.SUCCESS) {
+      return Descriptor.Invalid();
     }
     let fd = load<u32>(fd_buf);
 
-    return fd as Descriptor;
+    return new Descriptor(fd);
   }
 
 
   static advise(fd: Descriptor, offset: u64, len: u64, advice: advice): bool {
-    return fd_advise(fd, offset, len, advice) === errno.SUCCESS;
+    return fd_advise(fd.rawfd, offset, len, advice) === errno.SUCCESS;
   }
 
   static allocate(fd: Descriptor, offset: u64, len: u64): bool {
-    return fd_allocate(fd, offset, len) === errno.SUCCESS;
+    return fd_allocate(fd.rawfd, offset, len) === errno.SUCCESS;
   }
 
   static dataSync(fd: Descriptor): bool {
-    return fd_datasync(fd) === errno.SUCCESS;
+    return fd_datasync(fd.rawfd) === errno.SUCCESS;
   }
 
   static fileType(fd: Descriptor): filetype {
     let st_buf = changetype<usize>(new ArrayBuffer(24));
-    if (fd_fdstat_get(fd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
+    if (fd_fdstat_get(fd.rawfd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
       throw new WASAError("Unable to get the file type");
     }
     let file_type: u8 = load<u8>(st_buf);
+
     return file_type;
   }
 
   static setFlags(fd: Descriptor, flags: fdflags): bool {
-    return fd_fdstat_set_flags(fd, flags) === errno.SUCCESS;
+    return fd_fdstat_set_flags(fd.rawfd, flags) === errno.SUCCESS;
   }
 
   static fileStat(fd: Descriptor): FileStat {
     let st_buf = changetype<usize>(new ArrayBuffer(56));
-    if (fd_filestat_get(fd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
+    if (fd_filestat_get(fd.rawfd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
       throw new WASAError("Unable to get the file information");
     }
     let file_stat = new FileStat();
@@ -156,19 +159,19 @@ export class FileSystem {
   }
 
   static setSize(fd: Descriptor, size: u64): bool {
-    return fd_filestat_set_size(fd, size) === errno.SUCCESS;
+    return fd_filestat_set_size(fd.rawfd, size) === errno.SUCCESS;
   }
 
   static setAccessTime(fd: Descriptor, ts: f64): bool {
     return (
-      fd_filestat_set_times(fd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
+      fd_filestat_set_times(fd.rawfd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
       errno.SUCCESS
     );
   }
 
   static setModificationTime(fd: Descriptor, ts: f64): bool {
     return (
-      fd_filestat_set_times(fd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
+      fd_filestat_set_times(fd.rawfd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
       errno.SUCCESS
     );
   }
@@ -176,7 +179,7 @@ export class FileSystem {
   static touch(fd: Descriptor): bool {
     return (
       fd_filestat_set_times(
-        fd,
+        fd.rawfd,
         0,
         0,
         fstflags.SET_ATIM_NOW | fstflags.SET_MTIM_NOW
@@ -188,13 +191,13 @@ export class FileSystem {
     let path_max: usize = 4096;
     for (; ;) {
       let path_buf = changetype<usize>(new ArrayBuffer(path_max));
-      let ret = fd_prestat_dir_name(fd, path_buf, path_max);
+      let ret = fd_prestat_dir_name(fd.rawfd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
         path_max = path_max * 2;
         continue;
       }
       let path_len = 0;
-      while (load<u8>(path_buf + path_len) != 0) {
+      while (load<u8>(path_buf + path_len) !== 0) {
         path_len++;
       }
       return String.fromUTF8(path_buf, path_len);
@@ -227,7 +230,7 @@ export class IO {
    * @param fd file descriptor
    */
   static close(fd: Descriptor): void {
-    fd_close(fd);
+    fd_close(fd.rawfd);
   }
 
   /**
@@ -246,7 +249,7 @@ export class IO {
     store<u32>(iov + sizeof<usize>(), data_buf_len);
 
     let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
-    fd_write(fd, iov, 1, written_ptr);
+    fd_write(fd.rawfd, iov, 1, written_ptr);
   }
 
   /**
@@ -266,7 +269,7 @@ export class IO {
     store<u32>(iov, s_utf8);
     store<u32>(iov + sizeof<usize>(), s_utf8_len);
     let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
-    fd_write(fd, iov, 1, written_ptr);
+    fd_write(fd.rawfd, iov, 1, written_ptr);
   }
 
   /**
@@ -285,7 +288,7 @@ export class IO {
     store<u32>(iov + sizeof<usize>() * 2, lf);
     store<u32>(iov + sizeof<usize>() * 3, 1);
     let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
-    fd_write(fd, iov, 2, written_ptr);
+    fd_write(fd.rawfd, iov, 2, written_ptr);
   }
 
   /**
@@ -305,7 +308,7 @@ export class IO {
     store<u32>(iov, data_partial);
     store<u32>(iov + sizeof<usize>(), data_partial_len);
     let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
-    fd_read(fd, iov, 1, read_ptr);
+    fd_read(fd.rawfd, iov, 1, read_ptr);
     let read = load<usize>(read_ptr);
     if (read > 0) {
       for (let i: usize = 0; i < read; i++) {
@@ -337,7 +340,7 @@ export class IO {
     let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
     let read: usize = 0;
     for (; ;) {
-      if (fd_read(fd, iov, 1, read_ptr) != errno.SUCCESS) {
+      if (fd_read(fd.rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
         break;
       }
       read = load<usize>(read_ptr);
@@ -392,14 +395,14 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static write(s: string, newline: bool = true): void {
-    IO.writeString(STDOUT, s, newline);
+    IO.writeString(Descriptor.Stdout(), s, newline);
   }
 
   /**
    * Read an UTF8 string from the console, convert it to a native string
    */
   static readAll(): string | null {
-    return IO.readString(STDIN);
+    return IO.readString(Descriptor.Stdin());
   }
 
   /**
@@ -415,7 +418,7 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static error(s: string, newline: bool = true): void {
-    IO.writeString(STDERR, s, newline);
+    IO.writeString(Descriptor.Stderr(), s, newline);
   }
 }
 
@@ -429,7 +432,7 @@ export class Random {
     let ptr = changetype<usize>(buffer);
     while (len > 0) {
       let chunk = min(len, 256);
-      if (random_get(ptr, chunk) != errno.SUCCESS) {
+      if (random_get(ptr, chunk) !== errno.SUCCESS) {
         abort();
       }
       len -= chunk;
@@ -494,7 +497,7 @@ export class Environ {
       new ArrayBuffer(2 * sizeof<usize>())
     );
     let ret = environ_sizes_get(count_and_size, count_and_size + 4);
-    if (ret != errno.SUCCESS) {
+    if (ret !== errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size);
@@ -503,7 +506,7 @@ export class Environ {
       new ArrayBuffer((count + 1) * sizeof<usize>())
     );
     let buf = changetype<usize>(new ArrayBuffer(size));
-    if (environ_get(env_ptrs, buf) != errno.SUCCESS) {
+    if (environ_get(env_ptrs, buf) !== errno.SUCCESS) {
       abort();
     }
     for (let i: usize = 0; i < count; i++) {
@@ -528,7 +531,7 @@ export class Environ {
    */
   get(key: string): string | null {
     for (let i = 0, j = this.env.length; i < j; i++) {
-      if (this.env[i].key == key) {
+      if (this.env[i].key === key) {
         return this.env[i].value;
       }
     }
@@ -545,7 +548,7 @@ export class CommandLine {
       new ArrayBuffer(2 * sizeof<usize>())
     );
     let ret = args_sizes_get(count_and_size, count_and_size + 4);
-    if (ret != errno.SUCCESS) {
+    if (ret !== errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size);
@@ -554,7 +557,7 @@ export class CommandLine {
       new ArrayBuffer((count + 1) * sizeof<usize>())
     );
     let buf = changetype<usize>(new ArrayBuffer(size));
-    if (args_get(env_ptrs, buf) != errno.SUCCESS) {
+    if (args_get(env_ptrs, buf) !== errno.SUCCESS) {
       abort();
     }
     for (let i: usize = 0; i < count; i++) {
@@ -587,7 +590,7 @@ export class CommandLine {
 class StringUtils {
   static fromCString(cstring: usize): string {
     let size = 0;
-    while (load<u8>(cstring + size) != 0) {
+    while (load<u8>(cstring + size) !== 0) {
       size++;
     }
     return String.fromUTF8(cstring, size);

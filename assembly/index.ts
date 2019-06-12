@@ -1,12 +1,10 @@
 import {
   Descriptor, FDStat,
-  STDIN, STDOUT, STDERR,
   IO, Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
 } from "./wasa";
 
 export {
   Descriptor, FDStat,
-  STDIN, STDOUT, STDERR,
   IO, Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
 };
 
@@ -16,12 +14,12 @@ import {
 } from "bindings/wasi";
 
 Console.error("test");
-FileSystem.advise(1, 2, 3, Advice.DONTNEED);
+FileSystem.advise(new Descriptor(1), 2, 3, Advice.DONTNEED);
 
-let st = FileSystem.fileType(0);
+let st = FileSystem.fileType(Descriptor.Stdin());
 Console.log(st.toString());
 
-FileSystem.setFlags(1, FDFlags.SYNC);
+FileSystem.setFlags(Descriptor.Stdout(), FDFlags.SYNC);
 
-let x = FileSystem.fileStat(1);
+let x = FileSystem.fileStat(Descriptor.Stdout());
 Console.log(x.creation_time.toString());
