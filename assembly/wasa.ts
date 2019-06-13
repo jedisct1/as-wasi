@@ -1,5 +1,3 @@
-// The entry file of your WebAssembly module.
-
 import {
   advice,
   args_get,
