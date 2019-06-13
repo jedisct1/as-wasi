@@ -81,15 +81,37 @@ export class FileStat {
  * A descriptor, that doesn't necessarily have to represent a file
  */
 export class Descriptor {
+  /**
+   * An invalid file descriptor, that can represent an error
+   */
   static Invalid(): Descriptor { return new Descriptor(-1); };
+
+  /**
+   * The standard input
+   */
   static Stdin(): Descriptor { return new Descriptor(0); };
+
+  /**
+   * The standard output
+   */
   static Stdout(): Descriptor { return new Descriptor(1); };
+
+  /**
+   * The standard error
+   */
   static Stderr(): Descriptor { return new Descriptor(2); };
 
+  /**
+   * Build a new descriptor from a raw WASI file descriptor
+   * @param rawfd a raw file descriptor
+   */
   constructor(readonly rawfd: fd) { }
 
   /**
    * Hint at how the data accessible via the descriptor will be used
+   * @offset offset
+   * @len length
+   * @advice `advice.{NORMAL, SEQUENTIAL, RANDOM, WILLNEED, DONTNEED, NOREUSE}`
    * @returns `true` on success, `false` on error
    */
   advise(offset: u64, len: u64, advice: advice): bool {
@@ -98,6 +120,8 @@ export class Descriptor {
 
   /**
    * Preallocate data
+   * @param offset where to start preallocating data in the file
+   * @param len bytes to preallocate
    * @returns `true` on success, `false` on error
    */
   allocate(offset: u64, len: u64): bool {
@@ -135,6 +159,7 @@ export class Descriptor {
 
   /**
    * Set WASI flags for that descriptor
+   * @params flags: one or more of `fdflags.{APPEND, DSYNC, NONBLOCK, RSYNC, SYNC}`
    * @returns `true` on success, `false` on error
    */
   setFlags(flags: fdflags): bool {
@@ -469,6 +494,8 @@ export class FileSystem {
 
   /**
    * Create a new directory
+   * @path path
+   * @returns `true` on success, `false` on failure
    */
   static mkdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
@@ -481,6 +508,8 @@ export class FileSystem {
 
   /**
    * Check if a file exists at a given path
+   * @path path
+   * @returns `true` on success, `false` on failure
    */
   static exists(path: string): bool {
     let dirfd = this.dirfdForPath(path);
@@ -496,6 +525,9 @@ export class FileSystem {
 
   /**
    * Create a hard link
+   * @old_path old path
+   * @new_path new path
+   * @returns `true` on success, `false` on failure
    */
   static link(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
@@ -513,6 +545,9 @@ export class FileSystem {
 
   /**
    * Create a symbolic link
+   * @old_path old path
+   * @new_path new path
+   * @returns `true` on success, `false` on failure
    */
   static symlink(old_path: string, new_path: string): bool {
     let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
@@ -528,6 +563,8 @@ export class FileSystem {
 
   /**
    * Unlink a file
+   * @path path
+   * @returns `true` on success, `false` on failure
    */
   static unlink(path: string): bool {
     let dirfd = this.dirfdForPath(path);
@@ -540,6 +577,8 @@ export class FileSystem {
 
   /**
    * Remove a directory
+   * @path path
+   * @returns `true` on success, `false` on failure
    */
   static rmdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
@@ -552,6 +591,8 @@ export class FileSystem {
 
   /**
    * Retrieve information about a file
+   * @path path
+   * @returns a `FileStat` object
    */
   static stat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
@@ -567,6 +608,8 @@ export class FileSystem {
 
   /**
    * Retrieve information about a file or a symbolic link
+   * @path path
+   * @returns a `FileStat` object
    */
   static lstat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
@@ -582,6 +625,9 @@ export class FileSystem {
 
   /**
    * Rename a file
+   * @old_path old path
+   * @new_path new path
+   * @returns `true` on success, `false` on failure
    */
   static rename(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
@@ -847,6 +893,11 @@ export class CommandLine {
 }
 
 class StringUtils {
+  /**
+   * Returns a native string from a zero-terminated C string
+   * @param cstring
+   * @returns native string
+   */
   static fromCString(cstring: usize): string {
     let size = 0;
     while (load<u8>(cstring + size) !== 0) {
