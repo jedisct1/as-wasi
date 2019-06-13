@@ -1,12 +1,12 @@
 import {
   INVALID_DESCRIPTOR, STDIN, STDOUT, STDERR,
-  Descriptor, FDStat,
+  Descriptor, FDStat, FDWhence,
   Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
 } from "./wasa";
 
 export {
   INVALID_DESCRIPTOR, STDIN, STDOUT, STDERR,
-  Descriptor, FDStat,
+  Descriptor, FDStat, FDWhence,
   Console, Random, Date, Process, EnvironEntry, Environ, CommandLine, FileSystem, FileStat
 };
 
@@ -24,5 +24,10 @@ Console.log(st.toString());
 
 STDOUT.setFlags(FDFlags.SYNC);
 
-let x = STDOUT.fileStat();
+let x = STDOUT.stat();
 Console.log(x.creation_time.toString());
+
+let z = FileSystem.readdir("assembly");
+for (let i = 0; i < z!.length; i++) {
+  Console.log(z![i]);
+}

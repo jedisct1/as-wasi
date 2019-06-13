@@ -7,6 +7,7 @@ import {
   clock_res_get,
   clock_time_get,
   clockid,
+  dircookie,
   environ_get,
   environ_sizes_get,
   errno,
@@ -21,11 +22,15 @@ import {
   fd_filestat_set_times,
   fd_prestat_dir_name,
   fd_read,
+  fd_readdir,
+  fd_seek,
   fd_sync,
+  fd_tell,
   fd_write,
   fd,
   fdflags,
   fdstat,
+  whence,
   filesize,
   filestat,
   filetype,
@@ -36,13 +41,17 @@ import {
   path_filestat_get,
   path_link,
   path_open,
+  path_rename,
+  path_remove_directory,
   path_symlink,
+  path_unlink_file,
   proc_exit,
   random_get,
   rights,
 } from "bindings/wasi";
 
 export type FDStat = fdstat;
+export type FDWhence = whence;
 
 export class WASAError extends Error {
   constructor(message: string = "") {
@@ -57,6 +66,14 @@ export class FileStat {
   access_time: f64;
   modification_time: f64;
   creation_time: f64;
+
+  constructor(st_buf: usize) {
+    this.file_type = load<u8>(st_buf + 16);
+    this.file_size = load<u64>(st_buf + 24);
+    this.access_time = (load<u64>(st_buf + 32) as f64) / 1e9;
+    this.modification_time = (load<u64>(st_buf + 40) as f64) / 1e9;
+    this.creation_time = (load<u64>(st_buf + 48) as f64) / 1e9;
+  }
 }
 
 export class Descriptor {
@@ -97,19 +114,12 @@ export class Descriptor {
     return fd_fdstat_set_flags(this.rawfd, flags) === errno.SUCCESS;
   }
 
-  fileStat(): FileStat {
+  stat(): FileStat {
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (fd_filestat_get(this.rawfd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
       throw new WASAError("Unable to get the file information");
     }
-    let file_stat = new FileStat();
-    file_stat.file_type = load<u8>(st_buf + 16);
-    file_stat.file_size = load<u64>(st_buf + 24);
-    file_stat.access_time = (load<u64>(st_buf + 32) as f64) / 1e9;
-    file_stat.modification_time = (load<u64>(st_buf + 40) as f64) / 1e9;
-    file_stat.creation_time = (load<u64>(st_buf + 48) as f64) / 1e9;
-
-    return file_stat;
+    return new FileStat(st_buf);
   }
 
   ftruncate(size: u64 = 0): bool {
@@ -307,6 +317,22 @@ export class Descriptor {
 
     return s;
   }
+
+  seek(off: u64, w: FDWhence): bool {
+    let fodder = changetype<usize>(new ArrayBuffer(8));
+    let res = fd_seek(this.rawfd, off, w, fodder);
+
+    return res === errno.SUCCESS;
+  }
+
+  tell(): u64 {
+    let buf_off = changetype<usize>(new ArrayBuffer(8));
+    let res = fd_tell(this.rawfd, buf_off);
+    if (res !== errno.SUCCESS) {
+      abort();
+    }
+    return load<u64>(buf_off);
+  }
 }
 
 export const INVALID_DESCRIPTOR = Descriptor.Invalid();
@@ -319,13 +345,13 @@ export class FileSystem {
     return 3;
   }
 
-  static open(path: string, flags: string = "r"): Descriptor {
+  static open(path: string, flags: string = "r"): Descriptor | null {
     let dirfd = this.dirfdForPath(path);
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let fd_oflags: u16 = 0;
     let fd_rights: u64 = 0;
     if (flags === "r") {
-      fd_rights = rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET;
+      fd_rights = rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_READDIR;
     } else if (flags === "r+") {
       fd_rights =
         rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_WRITE |
@@ -347,7 +373,7 @@ export class FileSystem {
         rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.FD_WRITE |
         rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET | rights.PATH_CREATE_FILE;
     } else {
-      return Descriptor.Invalid();
+      return null;
     }
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
@@ -366,7 +392,7 @@ export class FileSystem {
       fd_buf
     );
     if (res !== errno.SUCCESS) {
-      return Descriptor.Invalid();
+      return null;
     }
     let fd = load<u32>(fd_buf);
 
@@ -414,11 +440,107 @@ export class FileSystem {
     let new_dirfd = this.dirfdForPath(new_path);
     let new_path_utf8_len: usize = new_path.lengthUTF8 - 1;
     let new_path_utf8 = new_path.toUTF8();
-    let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let res = path_symlink(old_path_utf8, old_path_utf8_len,
       new_dirfd, new_path_utf8, new_path_utf8_len);
 
     return res === errno.SUCCESS;
+  }
+
+  static unlink(path: string): bool {
+    let dirfd = this.dirfdForPath(path);
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let res = path_unlink_file(dirfd, path_utf8, path_utf8_len);
+
+    return res === errno.SUCCESS;
+  }
+
+  static rmdir(path: string): bool {
+    let dirfd = this.dirfdForPath(path);
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let res = path_remove_directory(dirfd, path_utf8, path_utf8_len);
+
+    return res === errno.SUCCESS;
+  }
+
+  static stat(path: string): FileStat {
+    let dirfd = this.dirfdForPath(path);
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
+    let st_buf = changetype<usize>(new ArrayBuffer(56));
+    if (path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
+      throw new WASAError("Unable to get the file information");
+    }
+    return new FileStat(st_buf);
+  }
+
+  static lstat(path: string): FileStat {
+    let dirfd = this.dirfdForPath(path);
+    let path_utf8_len: usize = path.lengthUTF8 - 1;
+    let path_utf8 = path.toUTF8();
+    let fd_lookup_flags = 0;
+    let st_buf = changetype<usize>(new ArrayBuffer(56));
+    if (path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
+      throw new WASAError("Unable to get the file information");
+    }
+    return new FileStat(st_buf);
+  }
+
+  static rename(old_path: string, new_path: string): bool {
+    let old_dirfd = this.dirfdForPath(old_path);
+    let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
+    let old_path_utf8 = old_path.toUTF8();
+    let new_dirfd = this.dirfdForPath(new_path);
+    let new_path_utf8_len: usize = new_path.lengthUTF8 - 1;
+    let new_path_utf8 = new_path.toUTF8();
+    let res = path_rename(old_dirfd, old_path_utf8, old_path_utf8_len,
+      new_dirfd, new_path_utf8, new_path_utf8_len);
+
+    return res === errno.SUCCESS;
+  }
+
+  static readdir(path: string): Array<string> | null {
+    let fd = this.open(path, "r");
+    if (fd === null) {
+      return null;
+    }
+    let out = new Array<string>();
+    let buf = null;
+    let buf_size = 4096;
+    let buf_used_p = changetype<usize>(new ArrayBuffer(4));
+    let buf_used = 0;
+    for (; ;) {
+      buf = changetype<usize>(new ArrayBuffer(buf_size));
+      __retain(buf);
+      if (fd_readdir(fd.rawfd, buf, buf_size, 0 as dircookie, buf_used_p) !== errno.SUCCESS) {
+        fd.close();
+      }
+      buf_used = load<u32>(buf_used_p);
+      if (buf_used < buf_size) {
+        break;
+      }
+      buf_size <<= 1;
+      __release(buf);
+    }
+    let offset = 0;
+    while (offset < buf_used) {
+      offset += 16;
+      let name_len = load<u32>(buf + offset);
+      offset += 8;
+      if (offset + name_len > buf_used) {
+        return null;
+      }
+      let name = String.fromUTF8(buf + offset, name_len);
+      Console.log(name);
+      out.push(name);
+      offset += name_len;
+    }
+    __release(buf);
+    fd.close();
+
+    return out;
   }
 }
 
