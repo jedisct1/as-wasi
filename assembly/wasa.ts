@@ -404,26 +404,6 @@ export class Descriptor {
 }
 
 /**
- * An invalid descriptor
- */
-export const INVALID_DESCRIPTOR = Descriptor.Invalid();
-
-/**
- * The standard input
- */
-export const STDIN = Descriptor.Stdin();
-
-/**
- * The standard output
- */
-export const STDOUT = Descriptor.Stdout();
-
-/**
- * The standard error
- */
-export const STDERR = Descriptor.Stderr();
-
-/**
  * A class to access a filesystem
  */
 export class FileSystem {
@@ -674,14 +654,14 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static write(s: string, newline: bool = true): void {
-    STDOUT.writeString(s, newline);
+    Descriptor.Stdout().writeString(s, newline);
   }
 
   /**
    * Read an UTF8 string from the console, convert it to a native string
    */
   static readAll(): string | null {
-    return STDIN.readString();
+    return Descriptor.Stdin().readString();
   }
 
   /**
@@ -697,7 +677,7 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static error(s: string, newline: bool = true): void {
-    STDERR.writeString(s, newline);
+    Descriptor.Stderr().writeString(s, newline);
   }
 }
 
