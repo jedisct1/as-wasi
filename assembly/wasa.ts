@@ -50,9 +50,9 @@ import {
   rights,
 } from "bindings/wasi";
 
-export type FDStat = fdstat;
-export type FDWhence = whence;
-
+/**
+ * A WASA error
+ */
 export class WASAError extends Error {
   constructor(message: string = "") {
     super(message);
@@ -60,6 +60,9 @@ export class WASAError extends Error {
   }
 }
 
+/**
+ * Portable information about a file
+ */
 export class FileStat {
   file_type: filetype;
   file_size: filesize;
@@ -76,6 +79,9 @@ export class FileStat {
   }
 }
 
+/**
+ * A descriptor, that doesn't necessarily have to represent a file
+ */
 export class Descriptor {
   static Invalid(): Descriptor { return new Descriptor(-1); };
   static Stdin(): Descriptor { return new Descriptor(0); };
@@ -84,22 +90,41 @@ export class Descriptor {
 
   constructor(readonly rawfd: fd) { }
 
+  /**
+   * Hint at how the data accessible via the descriptor will be used
+   * @returns `true` on success, `false` on error
+   */
   advise(offset: u64, len: u64, advice: advice): bool {
     return fd_advise(this.rawfd, offset, len, advice) === errno.SUCCESS;
   }
 
+  /**
+   * Preallocate data
+   * @returns `true` on success, `false` on error
+   */
   allocate(offset: u64, len: u64): bool {
     return fd_allocate(this.rawfd, offset, len) === errno.SUCCESS;
   }
 
+  /**
+   * Wait for the data to be written
+   * @returns `true` on success, `false` on error
+   */
   fdatasync(): bool {
     return fd_datasync(this.rawfd) === errno.SUCCESS;
   }
 
+  /**
+   * Wait for the data and metadata to be written
+   * @returns `true` on success, `false` on error
+   */
   fsync(): bool {
     return fd_sync(this.rawfd) === errno.SUCCESS;
   }
 
+  /**
+   * Return the file type
+   */
   fileType(): filetype {
     let st_buf = changetype<usize>(new ArrayBuffer(24));
     if (fd_fdstat_get(this.rawfd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
@@ -110,10 +135,18 @@ export class Descriptor {
     return file_type;
   }
 
+  /**
+   * Set WASI flags for that descriptor
+   * @returns `true` on success, `false` on error
+   */
   setFlags(flags: fdflags): bool {
     return fd_fdstat_set_flags(this.rawfd, flags) === errno.SUCCESS;
   }
 
+  /**
+   * Retrieve information about a descriptor
+   * @returns a `FileStat` object`
+   */
   stat(): FileStat {
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (fd_filestat_get(this.rawfd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
@@ -122,10 +155,20 @@ export class Descriptor {
     return new FileStat(st_buf);
   }
 
+  /**
+   * Change the size of a file
+   * @param size new size
+   * @returns `true` on success, `false` on error
+   */
   ftruncate(size: u64 = 0): bool {
     return fd_filestat_set_size(this.rawfd, size) === errno.SUCCESS;
   }
 
+  /**
+   * Update the access time
+   * @ts timestamp in seconds
+   * @returns `true` on success, `false` on error
+   */
   fatime(ts: f64): bool {
     return (
       fd_filestat_set_times(this.rawfd, (ts * 1e9) as u64, 0, fstflags.SET_ATIM) ===
@@ -133,6 +176,11 @@ export class Descriptor {
     );
   }
 
+  /**
+   * Update the modification time
+   * @ts timestamp in seconds
+   * @returns `true` on success, `false` on error
+   */
   fmtime(ts: f64): bool {
     return (
       fd_filestat_set_times(this.rawfd, 0, (ts * 1e9) as u64, fstflags.SET_MTIM) ===
@@ -140,6 +188,12 @@ export class Descriptor {
     );
   }
 
+  /**
+   * Update both the access and the modification times
+   * @atime timestamp in seconds
+   * @mtime timestamp in seconds
+   * @returns `true` on success, `false` on error
+   */
   futimes(atime: f64, mtime: f64): bool {
     return (
       fd_filestat_set_times(this.rawfd, (atime * 1e9) as u64, (mtime * 1e9) as u64,
@@ -147,6 +201,10 @@ export class Descriptor {
     );
   }
 
+  /**
+   * Update the timestamp of the object represented by the descriptor
+   * @returns `true` on success, `false` on error
+   */
   touch(): bool {
     return (
       fd_filestat_set_times(
@@ -158,6 +216,9 @@ export class Descriptor {
     );
   }
 
+  /**
+   * Return the directory associated to that descriptor
+   */
   dirName(): String {
     let path_max: usize = 4096;
     for (; ;) {
@@ -318,13 +379,22 @@ export class Descriptor {
     return s;
   }
 
-  seek(off: u64, w: FDWhence): bool {
+  /**
+   * Seek into a stream
+   * @off offset
+   * @w the position relative to which to set the offset of the file descriptor.
+   */
+  seek(off: u64, w: whence): bool {
     let fodder = changetype<usize>(new ArrayBuffer(8));
     let res = fd_seek(this.rawfd, off, w, fodder);
 
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Return the current offset in the stream
+   * @returns offset
+   */
   tell(): u64 {
     let buf_off = changetype<usize>(new ArrayBuffer(8));
     let res = fd_tell(this.rawfd, buf_off);
@@ -335,16 +405,36 @@ export class Descriptor {
   }
 }
 
+/**
+ * An invalid descriptor
+ */
 export const INVALID_DESCRIPTOR = Descriptor.Invalid();
+
+/**
+ * The standard input
+ */
 export const STDIN = Descriptor.Stdin();
+
+/**
+ * The standard output
+ */
 export const STDOUT = Descriptor.Stdout();
+
+/**
+ * The standard error
+ */
 export const STDERR = Descriptor.Stderr();
 
+/**
+ * A class to access a filesystem
+ */
 export class FileSystem {
-  protected static dirfdForPath(path: string): fd {
-    return 3;
-  }
-
+  /**
+   * Open a path
+   * @path path
+   * @flags r, r+, w, wx, w+ or xw+
+   * @returns a descriptor
+   */
   static open(path: string, flags: string = "r"): Descriptor | null {
     let dirfd = this.dirfdForPath(path);
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
@@ -399,6 +489,9 @@ export class FileSystem {
     return new Descriptor(fd);
   }
 
+  /**
+   * Create a new directory
+   */
   static mkdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -408,6 +501,9 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Check if a file exists at a given path
+   */
   static exists(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -420,6 +516,9 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Create a hard link
+   */
   static link(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
     let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
@@ -434,6 +533,9 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Create a symbolic link
+   */
   static symlink(old_path: string, new_path: string): bool {
     let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
     let old_path_utf8 = old_path.toUTF8();
@@ -446,6 +548,9 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Unlink a file
+   */
   static unlink(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -455,6 +560,9 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Remove a directory
+   */
   static rmdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -464,6 +572,9 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Retrieve information about a file
+   */
   static stat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -476,6 +587,9 @@ export class FileSystem {
     return new FileStat(st_buf);
   }
 
+  /**
+   * Retrieve information about a file or a symbolic link
+   */
   static lstat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = path.lengthUTF8 - 1;
@@ -488,6 +602,9 @@ export class FileSystem {
     return new FileStat(st_buf);
   }
 
+  /**
+   * Rename a file
+   */
   static rename(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
     let old_path_utf8_len: usize = old_path.lengthUTF8 - 1;
@@ -501,6 +618,11 @@ export class FileSystem {
     return res === errno.SUCCESS;
   }
 
+  /**
+   * Get the content of a directory
+   * @param path the directory path
+   * @returns An array of file names
+   */
   static readdir(path: string): Array<string> | null {
     let fd = this.open(path, "r");
     if (fd === null) {
@@ -541,6 +663,10 @@ export class FileSystem {
     fd.close();
 
     return out;
+  }
+
+  protected static dirfdForPath(path: string): fd {
+    return 3;
   }
 }
 
