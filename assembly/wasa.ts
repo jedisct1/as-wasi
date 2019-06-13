@@ -653,7 +653,6 @@ export class FileSystem {
         return null;
       }
       let name = String.fromUTF8(buf + offset, name_len);
-      Console.log(name);
       out.push(name);
       offset += name_len;
     }
