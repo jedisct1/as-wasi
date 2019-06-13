@@ -632,8 +632,7 @@ export class FileSystem {
     let buf_used_p = changetype<usize>(new ArrayBuffer(4));
     let buf_used = 0;
     for (; ;) {
-      buf = changetype<usize>(new ArrayBuffer(buf_size));
-      __retain(buf);
+      buf = __alloc(buf_size, 0);
       if (fd_readdir(fd.rawfd, buf, buf_size, 0 as dircookie, buf_used_p) !== errno.SUCCESS) {
         fd.close();
       }
@@ -642,7 +641,7 @@ export class FileSystem {
         break;
       }
       buf_size <<= 1;
-      __release(buf);
+      __free(buf);
     }
     let offset = 0;
     while (offset < buf_used) {
@@ -656,7 +655,7 @@ export class FileSystem {
       out.push(name);
       offset += name_len;
     }
-    __release(buf);
+    __free(buf);
     fd.close();
 
     return out;
