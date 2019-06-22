@@ -255,7 +255,7 @@ export class Descriptor {
       while (load<u8>(path_buf + path_len) !== 0) {
         path_len++;
       }
-      return String.fromUTF8(path_buf, path_len);
+      return String.UTF8.decodeUnsafe(path_buf, path_len);
     }
   }
 
@@ -397,7 +397,7 @@ export class Descriptor {
     for (let i = 0; i < s_utf8_len; i++) {
       store<u8>(s_utf8_buf + i, s_utf8[i]);
     }
-    let s = String.fromUTF8(s_utf8_buf, s_utf8.length);
+    let s = String.UTF8.decodeUnsafe(s_utf8_buf, s_utf8.length);
 
     return s;
   }
@@ -677,7 +677,7 @@ export class FileSystem {
       if (offset + name_len > buf_used) {
         return null;
       }
-      let name = String.fromUTF8(buf + offset, name_len);
+      let name = String.UTF8.decodeUnsafe(buf + offset, name_len);
       out.push(name);
       offset += name_len;
     }
@@ -903,7 +903,7 @@ class StringUtils {
     while (load<u8>(cstring + size) !== 0) {
       size++;
     }
-    return String.fromUTF8(cstring, size);
+    return String.UTF8.decodeUnsafe(cstring, size);
   }
 }
 
