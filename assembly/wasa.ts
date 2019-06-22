@@ -295,7 +295,7 @@ export class Descriptor {
       return;
     }
     let s_utf8_len: usize = String.UTF8.byteLength(s);
-    let s_utf8 = <usize>String.UTF8.encode(s);
+    let s_utf8 = changetype<usize>(String.UTF8.encode(s));
     let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
     store<u32>(iov, s_utf8);
     store<u32>(iov + sizeof<usize>(), s_utf8_len);
@@ -309,7 +309,7 @@ export class Descriptor {
    */
   writeStringLn(s: string): void {
     let s_utf8_len: usize = String.UTF8.byteLength(s);
-    let s_utf8 = <usize>String.UTF8.encode(s);
+    let s_utf8 = changetype<usize>(String.UTF8.encode(s));
     let iov = changetype<usize>(new ArrayBuffer(4 * sizeof<usize>()));
     store<u32>(iov, s_utf8);
     store<u32>(iov + sizeof<usize>(), s_utf8_len);
@@ -500,7 +500,7 @@ export class FileSystem {
   static mkdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = <usize>String.UTF8.encode(path);
+    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
     let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -514,7 +514,7 @@ export class FileSystem {
   static exists(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = <usize>String.UTF8.encode(path);
+    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     let res = path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len,
@@ -532,10 +532,10 @@ export class FileSystem {
   static link(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
     let old_path_utf8_len: usize = String.UTF8.byteLength(old_path);
-    let old_path_utf8 = <usize>String.UTF8.encode(old_path);
+    let old_path_utf8 = changetype<usize>(String.UTF8.encode(old_path));
     let new_dirfd = this.dirfdForPath(new_path);
     let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = <usize>String.UTF8.encode(new_path);
+    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let res = path_link(old_dirfd, fd_lookup_flags, old_path_utf8, old_path_utf8_len,
       new_dirfd, new_path_utf8, new_path_utf8_len);
@@ -551,10 +551,10 @@ export class FileSystem {
    */
   static symlink(old_path: string, new_path: string): bool {
     let old_path_utf8_len: usize = String.UTF8.byteLength(old_path);
-    let old_path_utf8 = <usize>String.UTF8.encode(old_path);
+    let old_path_utf8 = changetype<usize>(String.UTF8.encode(old_path));
     let new_dirfd = this.dirfdForPath(new_path);
     let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = <usize>String.UTF8.encode(new_path);
+    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
     let res = path_symlink(old_path_utf8, old_path_utf8_len,
       new_dirfd, new_path_utf8, new_path_utf8_len);
 
@@ -569,7 +569,7 @@ export class FileSystem {
   static unlink(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = <usize>String.UTF8.encode(path);
+    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
     let res = path_unlink_file(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -583,7 +583,7 @@ export class FileSystem {
   static rmdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = <usize>String.UTF8.encode(path);
+    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
     let res = path_remove_directory(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -597,7 +597,7 @@ export class FileSystem {
   static stat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = String.UTF8.encode(path);
+    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
@@ -614,7 +614,7 @@ export class FileSystem {
   static lstat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
     let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = <usize>String.UTF8.encode(path);
+    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
     let fd_lookup_flags = 0;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (path_filestat_get(dirfd, fd_lookup_flags, path_utf8, path_utf8_len, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
@@ -632,10 +632,10 @@ export class FileSystem {
   static rename(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
     let old_path_utf8_len: usize = String.UTF8.byteLength(old_path);
-    let old_path_utf8 = <usize>String.UTF8.encode(old_path);
+    let old_path_utf8 = changetype<usize>(String.UTF8.encode(old_path));
     let new_dirfd = this.dirfdForPath(new_path);
     let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = <usize>String.UTF8.encode(new_path);
+    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
     let res = path_rename(old_dirfd, old_path_utf8, old_path_utf8_len,
       new_dirfd, new_path_utf8, new_path_utf8_len);
 
