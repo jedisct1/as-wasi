@@ -910,10 +910,11 @@ class StringUtils {
 @global
 export function wasi_abort(
   message: string | null = "",
-  _fileName: string | null = "",
-  _lineNumber: u32 = 0,
-  _columnNumber: u32 = 0
+  fileName: string | null = "",
+  lineNumber: u32 = 0,
+  columnNumber: u32 = 0
 ): void {
-  Console.error(message!);
+  Console.error(fileName! + ":" + lineNumber.toString() + ":" + columnNumber.toString() +
+    ": error: " + message!);
   proc_exit(255);
 }
