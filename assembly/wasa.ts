@@ -472,7 +472,6 @@ export class FileSystem {
       fd_rights =
         rights.FD_WRITE |
         rights.FD_READ  | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
-        rights.FD_SEEK  | rights.FD_TELL | rights.FD_FILESTAT_GET |
         rights.PATH_CREATE_FILE;
     } else {
       return null;
