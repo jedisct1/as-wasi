@@ -1,4 +1,5 @@
 {
+  "name": "wasa",
   "scripts": {
     "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --use abort=wasi_abort --debug",
     "asbuild:small": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --use abort=wasi_abort --validate -O3z ",
