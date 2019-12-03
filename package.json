@@ -1,5 +1,5 @@
 {
-  "name": "wasa",
+  "name": "as-wasi",
   "version": "0.0.1",
   "scripts": {
     "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --use abort=wasi_abort --debug",
