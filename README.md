@@ -2,14 +2,14 @@
 
 [WASI](https://wasi.dev) is an API providing access to the external world to WebAssembly modules.
 
-WASA is an effort to expose the WASI standard set of system calls to AssemblyScript.
+`as-wasi` is an effort to expose the WASI standard set of system calls to AssemblyScript.
 
 ## Usage
 
 Example usage of the `Console` and `Environ` classes:
 
 ```typescript
-import { Console, Environ } from "../node_modules/wasa/assembly";
+import { Console, Environ } from "../node_modules/as-wasi/assembly";
 
 let env = new Environ();
 let home = env.get("HOME")!;

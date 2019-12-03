@@ -49,12 +49,12 @@ import {
 } from "bindings/wasi";
 
 /**
- * A WASA error
+ * A WASI error
  */
-export class WASAError extends Error {
+export class WASIError extends Error {
   constructor(message: string = "") {
     super(message);
-    this.name = "WASAError";
+    this.name = "WASIError";
   }
 }
 
@@ -150,7 +150,7 @@ export class Descriptor {
   fileType(): filetype {
     let st_buf = changetype<usize>(new ArrayBuffer(24));
     if (fd_fdstat_get(this.rawfd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
-      throw new WASAError("Unable to get the file type");
+      throw new WASIError("Unable to get the file type");
     }
     let file_type = load<u8>(st_buf);
 
@@ -173,7 +173,7 @@ export class Descriptor {
   stat(): FileStat {
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (fd_filestat_get(this.rawfd, changetype<filestat>(st_buf)) !== errno.SUCCESS) {
-      throw new WASAError("Unable to get the file information");
+      throw new WASIError("Unable to get the file information");
     }
     return new FileStat(st_buf);
   }
@@ -624,7 +624,7 @@ export class FileSystem {
       path_utf8, path_utf8_len,
       changetype<filestat>(st_buf)
     ) !== errno.SUCCESS) {
-      throw new WASAError("Unable to get the file information");
+      throw new WASIError("Unable to get the file information");
     }
     return new FileStat(st_buf);
   }
@@ -646,7 +646,7 @@ export class FileSystem {
       path_utf8, path_utf8_len,
       changetype<filestat>(st_buf)
     ) !== errno.SUCCESS) {
-      throw new WASAError("Unable to get the file information");
+      throw new WASIError("Unable to get the file information");
     }
     return new FileStat(st_buf);
   }
