@@ -928,16 +928,15 @@ export class CommandLine {
 export class Time {
   // Create a buffer for our number of sleep events
   // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
-  static _neventsBuffer = __alloc(4, 0);
+  static _neventsBuffer: i32 = __alloc(4, 0);
 
-  static sleep(milliseconds: i32): void {
+  static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
     let clockSub = new clocksubscription();
     clockSub.userdata = 1;
     clockSub.identifier = 1;
     clockSub.clock_id = clockid.REALTIME;
-    // Time is in nanoseconds (* 1000000 for milliseconds)
-    clockSub.timeout = milliseconds * 1000000;
+    clockSub.timeout = nanoseconds;
     clockSub.precision = 10000;
     clockSub.type = eventtype.CLOCK;
     // We want this to be relative, no flags / subclockflag
@@ -952,6 +951,11 @@ export class Time {
       1, // Number of events to wait for
       changetype<usize>(Time._neventsBuffer) // Buffer where events should be stored.
     );
+  }
+
+  static sleepms(milliseconds: i32): void {
+    // sleep is in nanoseconds (* 1000000 for milliseconds)
+    Time.sleep(milliseconds * 1000000);
   }
 }
 
