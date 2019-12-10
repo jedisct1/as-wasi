@@ -932,8 +932,8 @@ export class CommandLine {
 export class Time {
 
   static NANOSECOND: i32 = 1;
-  static MILLISECOND: i32 = NANOSECOND * 1000000;
-  static SECOND: i32 = MILLISECOND * 1000;
+  static MILLISECOND: i32 = Time.NANOSECOND * 1000000;
+  static SECOND: i32 = Time.MILLISECOND * 1000;
 
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
