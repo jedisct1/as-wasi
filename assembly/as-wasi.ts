@@ -937,8 +937,8 @@ export class Time {
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
     let clockSub = new clocksubscription();
-    clockSub.userdata = 1;
-    clockSub.identifier = 1;
+    clockSub.userdata = 24;
+    clockSub.identifier = 24;
     clockSub.clock_id = clockid.REALTIME;
     clockSub.timeout = nanoseconds;
     clockSub.precision = 10000;
