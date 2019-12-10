@@ -925,6 +925,36 @@ export class CommandLine {
   }
 }
 
+export class Time {
+  // Create a buffer for our number of sleep events
+  // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
+  static _neventsBuffer = __alloc(4, 0);
+
+  static sleep(milliseconds: i32): void {
+    // Create our subscription to the clock
+    let clockSub = new clocksubscription();
+    clockSub.userdata = 1;
+    clockSub.identifier = 1;
+    clockSub.clock_id = clockid.REALTIME;
+    // Time is in nanoseconds (* 1000000 for milliseconds)
+    clockSub.timeout = milliseconds * 1000000;
+    clockSub.precision = 10000;
+    clockSub.type = eventtype.CLOCK;
+    // We want this to be relative, no flags / subclockflag
+
+    // Create our output event
+    let clockEvent = new event();
+
+    // Poll the subscription
+    poll_oneoff(
+      changetype<usize>(clockSub), // Pointer to the clock subscription
+      changetype<usize>(clockEvent), // Pointer to the clock event
+      1, // Number of events to wait for
+      changetype<usize>(Time._neventsBuffer) // Buffer where events should be stored.
+    );
+  }
+}
+
 class StringUtils {
   /**
    * Returns a native string from a zero-terminated C string
