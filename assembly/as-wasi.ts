@@ -930,15 +930,15 @@ export class CommandLine {
 }
 
 export class Time {
-  // Create a buffer for our number of sleep events
-  // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
-  static _neventsBuffer: i32 = __alloc(4, 0);
+  static NANOSECOND: i32 = 1;
+  static MILLISECOND: i32 = Time.NANOSECOND * 1000000;
+  static SECOND: i32 = Time.MILLISECOND * 1000;
 
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
     let clockSub = new clocksubscription();
-    clockSub.userdata = 24;
-    clockSub.identifier = 24;
+    clockSub.userdata = 0;
+    clockSub.identifier = 0;
     clockSub.clock_id = clockid.REALTIME;
     clockSub.timeout = nanoseconds;
     clockSub.precision = 10000;
@@ -948,18 +948,17 @@ export class Time {
     // Create our output event
     let clockEvent = new event();
 
+    // Create a buffer for our number of sleep events
+    // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
+    let neventsBuffer: i32 = __alloc(4, 0);
+
     // Poll the subscription
     poll_oneoff(
       changetype<usize>(clockSub), // Pointer to the clock subscription
       changetype<usize>(clockEvent), // Pointer to the clock event
       1, // Number of events to wait for
-      changetype<usize>(Time._neventsBuffer) // Buffer where events should be stored.
+      changetype<usize>(neventsBuffer) // Buffer where events should be stored.
     );
-  }
-
-  static sleepms(milliseconds: i32): void {
-    // sleep is in nanoseconds (* 1000000 for milliseconds)
-    Time.sleep(milliseconds * 1000000);
   }
 }
 
