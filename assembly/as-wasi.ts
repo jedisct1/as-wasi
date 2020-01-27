@@ -5,7 +5,7 @@ import {
   clock_res_get,
   clock_time_get,
   clockid,
-  clocksubscription,
+  subscription_clock,
   dircookie,
   environ_get,
   environ_sizes_get,
@@ -936,13 +936,13 @@ export class Time {
 
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
-    let clockSub = new clocksubscription();
+    let clockSub = new subscription_clock();
     clockSub.userdata = 0;
-    clockSub.identifier = 0;
     clockSub.clock_id = clockid.REALTIME;
     clockSub.timeout = nanoseconds;
     clockSub.precision = 10000;
     clockSub.type = eventtype.CLOCK;
+    clockSub.flags = 0;
     // We want this to be relative, no flags / subclockflag
 
     // Create our output event
