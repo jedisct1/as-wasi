@@ -8,7 +8,7 @@
     "asbuild": "npm run asbuild:optimized"
   },
   "devDependencies": {
-    "@as-pect/cli": "^2.7.0",
-    "assemblyscript": "^0.9"
+    "@as-pect/cli": "^2.8.0",
+    "assemblyscript": "^0.9.1"
   }
 }
