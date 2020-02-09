@@ -798,10 +798,10 @@ export class Date {
    */
   static now(): f64 {
     let time_ptr = changetype<usize>(new ArrayBuffer(8));
-    clock_time_get(clockid.REALTIME, 1000, time_ptr);
+    clock_time_get(clockid.REALTIME, 1000000, time_ptr);
     let unix_ts = load<u64>(time_ptr);
 
-    return (unix_ts as f64) / 1000.0;
+    return (unix_ts as f64) / 1000000.0;
   }
 }
 
