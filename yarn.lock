@@ -2,27 +2,27 @@
 # yarn lockfile v1
 
 
-"@as-pect/assembly@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-2.7.0.tgz#15cf832937e92d9290c5d2434c7aaed66a1a035f"
-  integrity sha512-nc8qENxXzMdWNGBEZ+cqXwVesXUmJ+x5h+uunMb7YXgVXNiLdsgXzd6zpQFUX4qczBOLwFbhUu3XpgWzFwFldg==
+"@as-pect/assembly@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-2.8.0.tgz#dbcc85005592537ad5502226f6885da285a27101"
+  integrity sha512-vdifEbWvM9+SrtowpSIUiXXYzUrxjT18YO8CySlZs+KhW8Sj3jWghfhOHXz1ilDyXWHGfCg7usaFDOlCCoThXA==
 
-"@as-pect/cli@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-2.7.0.tgz#d37102398cfb820df56ce54b04f1b0eb008f3987"
-  integrity sha512-DWuX6EJUZnx2DfmdY5aAXLKqVQejCWWBJscdAL0WDpfOcy51kD6Nvi9SfCmggcCfCCavvn87Kims7szi9U/Ixw==
+"@as-pect/cli@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-2.8.0.tgz#d3efe2ae82b3110a3d4cdbc91c70f6da3794d416"
+  integrity sha512-Me/w5eoUPpNJqYbP5JiTwissK6me2puwCz49lRwfFKura7n7pu+quUdzCYrSpChdI6SV/xXU1vmsAzqtsVUEIQ==
   dependencies:
-    "@as-pect/assembly" "^2.7.0"
-    "@as-pect/core" "^2.7.0"
+    "@as-pect/assembly" "^2.8.0"
+    "@as-pect/core" "^2.8.0"
     chalk "^3.0.0"
     glob "^7.1.6"
 
-"@as-pect/core@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-2.7.0.tgz#dd5f9097ffa9d5b0cbf55796cf754526d5038858"
-  integrity sha512-U2z6bJiqIM/C90tzuJq0UcL07sM72d4wFgetuEe9fmYrV5YI3qwMOoZqLR1Lp585VNAEoVrS6sydge2LW/f1Pg==
+"@as-pect/core@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-2.8.0.tgz#96033cbc8ccff484c4adcc880bfbb9535e9bbcad"
+  integrity sha512-X+OFVF1OupyUA5OSSSQU0qpGsqOemDNa7DG3FhERgq1sruWumiWMasyaQL5laZfn1lfG47m3LB3lLPfjWK9Oqg==
   dependencies:
-    "@as-pect/assembly" "^2.7.0"
+    "@as-pect/assembly" "^2.8.0"
     chalk "^3.0.0"
     long "^4.0.0"
   optionalDependencies:
