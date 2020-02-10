@@ -254,16 +254,19 @@ export class Descriptor {
   /**
    * Return the directory associated to that descriptor
    */
-  dirName(): String {
+  dirName(): string {
     let path_max = 4096 as usize;
+    let path_buf = __alloc(path_max, 0);
     while (true) {
-      let path_buf = changetype<usize>(new ArrayBuffer(path_max));
       let ret = fd_prestat_dir_name(this.rawfd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
         path_max *= 2;
+        path_buf = __realloc(path_buf, path_max);
         continue;
       }
-      return String.UTF8.decodeUnsafe(path_buf, path_max, true);
+      let path = String.UTF8.decodeUnsafe(path_buf, path_max, true);
+      __free(path_buf);
+      return path;
     }
   }
 
