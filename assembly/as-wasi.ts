@@ -260,14 +260,10 @@ export class Descriptor {
       let path_buf = changetype<usize>(new ArrayBuffer(path_max));
       let ret = fd_prestat_dir_name(this.rawfd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
-        path_max = path_max * 2;
+        path_max *= 2;
         continue;
       }
-      let path_len = 0;
-      while (load<u8>(path_buf + path_len) !== 0) {
-        path_len++;
-      }
-      return String.UTF8.decodeUnsafe(path_buf, path_len);
+      return String.UTF8.decodeUnsafe(path_buf, path_max, true);
     }
   }
 
@@ -284,14 +280,14 @@ export class Descriptor {
    */
   write(data: u8[]): void {
     let data_buf_len = data.length;
-    let data_buf = changetype<usize>(new ArrayBuffer(data_buf_len));
-    for (let i = 0; i < data_buf_len; i++) {
-      store<u8>(data_buf + i, unchecked(data[i]));
-    }
+    let data_buf_out = changetype<usize>(new ArrayBuffer(data_buf_len));
+    // @ts-ignore: cast
+    let data_buf_in = changetype<ArrayBufferView>(data).dataStart;
+    memory.copy(data_buf_out, data_buf_in, data_buf_len);
     // @ts-ignore: cast
     let iov = changetype<ArrayBufferView>(mem128).dataStart;
-    store<u32>(iov, data_buf);
-    store<u32>(iov + sizeof<usize>(), data_buf_len);
+    store<u32>(iov, data_buf_out, 0);
+    store<u32>(iov, data_buf_len, sizeof<usize>());
 
     // @ts-ignore: cast
     let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
@@ -313,7 +309,7 @@ export class Descriptor {
     // @ts-ignore: cast
     let iov = changetype<ArrayBufferView>(mem128).dataStart;
     store<u32>(iov, changetype<usize>(s_utf8_buf));
-    store<u32>(iov + sizeof<usize>(), s_utf8_len);
+    store<u32>(iov, s_utf8_len, sizeof<usize>());
 
     // @ts-ignore: cast
     let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
@@ -334,8 +330,8 @@ export class Descriptor {
     // @ts-ignore: cast
     let lf = changetype<ArrayBufferView>(mem64).dataStart;
     store<u8>(lf, 10);
-    store<u32>(iov + sizeof<usize>() * 2, lf);
-    store<u32>(iov + sizeof<usize>() * 3, 1);
+    store<u32>(iov, lf, sizeof<usize>() * 2);
+    store<u32>(iov,  1, sizeof<usize>() * 3);
 
     // @ts-ignore: cast
     let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
@@ -355,8 +351,8 @@ export class Descriptor {
     let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
     // @ts-ignore: cast
     let iov = changetype<ArrayBufferView>(mem128).dataStart;
-    store<u32>(iov, data_partial);
-    store<u32>(iov + sizeof<usize>(), data_partial_len);
+    store<u32>(iov, data_partial, 0);
+    store<u32>(iov, data_partial_len, sizeof<usize>());
     // @ts-ignore: cast
     let read_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     fd_read(this.rawfd, iov, 1, read_ptr);
@@ -382,8 +378,8 @@ export class Descriptor {
     let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
     // @ts-ignore: cast
     let iov = changetype<ArrayBufferView>(mem128).dataStart;
-    store<u32>(iov, data_partial);
-    store<u32>(iov + sizeof<usize>(), data_partial_len);
+    store<u32>(iov, data_partial, 0);
+    store<u32>(iov, data_partial_len, sizeof<usize>());
     // @ts-ignore: cast
     let read_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     let read: usize = 0;
@@ -527,8 +523,11 @@ export class FileSystem {
    */
   static mkdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+
     let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -570,8 +569,11 @@ export class FileSystem {
     let old_path_utf8 = changetype<usize>(old_path_utf8_buf);
 
     let new_dirfd = this.dirfdForPath(new_path);
-    let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
+
+    let new_path_utf8_buf = String.UTF8.encode(new_path);
+    let new_path_utf8_len: usize = new_path_utf8_buf.byteLength;
+    let new_path_utf8 = changetype<usize>(new_path_utf8_buf);
+
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let res = path_link(
       old_dirfd,
@@ -1003,7 +1005,8 @@ export class Time {
 
     // Create a buffer for our number of sleep events
     // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
-    let neventsBuffer = __alloc(4, 0);
+    // @ts-ignore
+    let neventsBuffer = changetype<ArrayBufferView>(mem64).dataStart;
 
     // Poll the subscription
     poll_oneoff(
