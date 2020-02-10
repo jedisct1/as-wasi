@@ -329,7 +329,7 @@ export class Descriptor {
     // @ts-ignore: cast
     let iov = changetype<ArrayBufferView>(mem256).dataStart;
     store<u32>(iov, changetype<usize>(s_utf8_buf));
-    store<u32>(iov + sizeof<usize>(), s_utf8_len);
+    store<u32>(iov, s_utf8_len, sizeof<usize>());
     // @ts-ignore: cast
     let lf = changetype<ArrayBufferView>(mem64).dataStart;
     store<u8>(lf, 10);
@@ -740,13 +740,12 @@ export class FileSystem {
       return null;
     }
     let out = new Array<string>();
-    let buf = null;
     let buf_size = 4096;
+    let buf = __alloc(buf_size, 0);
     // @ts-ignore: cast
     let buf_used_p = changetype<ArrayBufferView>(mem64).dataStart;
     let buf_used = 0;
     for (; ;) {
-      buf = __alloc(buf_size, 0);
       if (fd_readdir(fd.rawfd, buf, buf_size, 0 as dircookie, buf_used_p) !== errno.SUCCESS) {
         fd.close();
       }
@@ -755,7 +754,7 @@ export class FileSystem {
         break;
       }
       buf_size <<= 1;
-      __free(buf);
+      buf = __realloc(buf, buf_size);
     }
     let offset = 0;
     while (offset < buf_used) {
@@ -896,8 +895,8 @@ export class Environ {
     if (ret !== errno.SUCCESS) {
       abort();
     }
-    let count = load<usize>(count_and_size);
-    let size = load<usize>(count_and_size + sizeof<usize>());
+    let count = load<usize>(count_and_size, 0);
+    let size  = load<usize>(count_and_size, sizeof<usize>());
     let env_ptrs = changetype<usize>(
       new ArrayBuffer((count + 1) * sizeof<usize>())
     );
@@ -949,8 +948,8 @@ export class CommandLine {
     if (ret !== errno.SUCCESS) {
       abort();
     }
-    let count = load<usize>(count_and_size);
-    let size = load<usize>(count_and_size + sizeof<usize>());
+    let count = load<usize>(count_and_size, 0);
+    let size  = load<usize>(count_and_size, sizeof<usize>());
     let env_ptrs = changetype<usize>(
       new ArrayBuffer((count + 1) * sizeof<usize>())
     );
