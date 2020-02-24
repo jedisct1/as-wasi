@@ -52,6 +52,10 @@ import {
   rights,
 } from "bindings/wasi";
 
+@lazy const mem64:  u64[] = [0];
+@lazy const mem128: u64[] = [0, 0];
+@lazy const mem256: u64[] = [0, 0, 0, 0];
+
 /**
  * A WASI error
  */
@@ -250,20 +254,19 @@ export class Descriptor {
   /**
    * Return the directory associated to that descriptor
    */
-  dirName(): String {
+  dirName(): string {
     let path_max = 4096 as usize;
+    let path_buf = __alloc(path_max, 0);
     while (true) {
-      let path_buf = changetype<usize>(new ArrayBuffer(path_max));
       let ret = fd_prestat_dir_name(this.rawfd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
-        path_max = path_max * 2;
+        path_max *= 2;
+        path_buf = __realloc(path_buf, path_max);
         continue;
       }
-      let path_len = 0;
-      while (load<u8>(path_buf + path_len) !== 0) {
-        path_len++;
-      }
-      return String.UTF8.decodeUnsafe(path_buf, path_len);
+      let path = String.UTF8.decodeUnsafe(path_buf, path_max, true);
+      __free(path_buf);
+      return path;
     }
   }
 
@@ -280,15 +283,17 @@ export class Descriptor {
    */
   write(data: u8[]): void {
     let data_buf_len = data.length;
-    let data_buf = changetype<usize>(new ArrayBuffer(data_buf_len));
-    for (let i = 0; i < data_buf_len; i++) {
-      store<u8>(data_buf + i, unchecked(data[i]));
-    }
-    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
-    store<u32>(iov, data_buf);
-    store<u32>(iov + sizeof<usize>(), data_buf_len);
+    let data_buf_out = changetype<usize>(new ArrayBuffer(data_buf_len));
+    // @ts-ignore: cast
+    let data_buf_in = changetype<ArrayBufferView>(data).dataStart;
+    memory.copy(data_buf_out, data_buf_in, data_buf_len);
+    // @ts-ignore: cast
+    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    store<u32>(iov, data_buf_out, 0);
+    store<u32>(iov, data_buf_len, sizeof<usize>());
 
-    let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
+    // @ts-ignore: cast
+    let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     fd_write(this.rawfd, iov, 1, written_ptr);
   }
 
@@ -302,12 +307,15 @@ export class Descriptor {
       this.writeStringLn(s);
       return;
     }
-    let s_utf8_len: usize = String.UTF8.byteLength(s);
-    let s_utf8 = changetype<usize>(String.UTF8.encode(s));
-    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
-    store<u32>(iov, s_utf8);
-    store<u32>(iov + sizeof<usize>(), s_utf8_len);
-    let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
+    let s_utf8_buf = String.UTF8.encode(s);
+    let s_utf8_len: usize = s_utf8_buf.byteLength;
+    // @ts-ignore: cast
+    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    store<u32>(iov, changetype<usize>(s_utf8_buf));
+    store<u32>(iov, s_utf8_len, sizeof<usize>());
+
+    // @ts-ignore: cast
+    let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     fd_write(this.rawfd, iov, 1, written_ptr);
   }
 
@@ -316,16 +324,20 @@ export class Descriptor {
    * @param s string
    */
   writeStringLn(s: string): void {
-    let s_utf8_len: usize = String.UTF8.byteLength(s);
-    let s_utf8 = changetype<usize>(String.UTF8.encode(s));
-    let iov = changetype<usize>(new ArrayBuffer(4 * sizeof<usize>()));
-    store<u32>(iov, s_utf8);
-    store<u32>(iov + sizeof<usize>(), s_utf8_len);
-    let lf = changetype<usize>(new ArrayBuffer(1));
+    let s_utf8_buf = String.UTF8.encode(s);
+    let s_utf8_len: usize = s_utf8_buf.byteLength;
+    // @ts-ignore: cast
+    let iov = changetype<ArrayBufferView>(mem256).dataStart;
+    store<u32>(iov, changetype<usize>(s_utf8_buf));
+    store<u32>(iov, s_utf8_len, sizeof<usize>());
+    // @ts-ignore: cast
+    let lf = changetype<ArrayBufferView>(mem64).dataStart;
     store<u8>(lf, 10);
-    store<u32>(iov + sizeof<usize>() * 2, lf);
-    store<u32>(iov + sizeof<usize>() * 3, 1);
-    let written_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
+    store<u32>(iov, lf, sizeof<usize>() * 2);
+    store<u32>(iov,  1, sizeof<usize>() * 3);
+
+    // @ts-ignore: cast
+    let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     fd_write(this.rawfd, iov, 2, written_ptr);
   }
 
@@ -340,10 +352,12 @@ export class Descriptor {
   ): u8[] | null {
     let data_partial_len = chunk_size;
     let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
-    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
-    store<u32>(iov, data_partial);
-    store<u32>(iov + sizeof<usize>(), data_partial_len);
-    let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
+    // @ts-ignore: cast
+    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    store<u32>(iov, data_partial, 0);
+    store<u32>(iov, data_partial_len, sizeof<usize>());
+    // @ts-ignore: cast
+    let read_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     fd_read(this.rawfd, iov, 1, read_ptr);
     let read = load<usize>(read_ptr);
     if (read > 0) {
@@ -365,13 +379,16 @@ export class Descriptor {
   ): Array<u8> | null {
     let data_partial_len = chunk_size;
     let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
-    let iov = changetype<usize>(new ArrayBuffer(2 * sizeof<usize>()));
-    store<u32>(iov, data_partial);
-    store<u32>(iov + sizeof<usize>(), data_partial_len);
-    let read_ptr = changetype<usize>(new ArrayBuffer(sizeof<usize>()));
+    // @ts-ignore: cast
+    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    store<u32>(iov, data_partial, 0);
+    store<u32>(iov, data_partial_len, sizeof<usize>());
+    // @ts-ignore: cast
+    let read_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     let read: usize = 0;
+    let rawfd = this.rawfd;
     while (true) {
-      if (fd_read(this.rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
+      if (fd_read(rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
         break;
       }
       read = load<usize>(read_ptr);
@@ -397,12 +414,8 @@ export class Descriptor {
     if (s_utf8 === null) {
       return null;
     }
-    let s_utf8_len = s_utf8.length;
-    let s_utf8_buf = changetype<usize>(new ArrayBuffer(s_utf8_len));
-    for (let i = 0; i < s_utf8_len; i++) {
-      store<u8>(s_utf8_buf + i, s_utf8[i]);
-    }
-    return String.UTF8.decodeUnsafe(s_utf8_buf, s_utf8.length);
+    // @ts-ignore: cast
+    return String.UTF8.decodeUnsafe(s_utf8.dataStart, s_utf8.length);
   }
 
   /**
@@ -411,7 +424,8 @@ export class Descriptor {
    * @w the position relative to which to set the offset of the file descriptor.
    */
   seek(off: u64, w: whence): bool {
-    let fodder = changetype<usize>(new ArrayBuffer(8));
+    // @ts-ignore: cast
+    let fodder = changetype<ArrayBufferView>(mem64).dataStart;
     let res = fd_seek(this.rawfd, off, w, fodder);
 
     return res === errno.SUCCESS;
@@ -422,7 +436,8 @@ export class Descriptor {
    * @returns offset
    */
   tell(): u64 {
-    let buf_off = changetype<usize>(new ArrayBuffer(8));
+    // @ts-ignore: cast
+    let buf_off = changetype<ArrayBufferView>(mem64).dataStart;
     let res = fd_tell(this.rawfd, buf_off);
     if (res !== errno.SUCCESS) {
       abort();
@@ -482,9 +497,11 @@ export class FileSystem {
     }
     let fd_rights_inherited = fd_rights;
     let fd_flags: fdflags = 0;
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
-    let fd_buf = changetype<usize>(new ArrayBuffer(sizeof<u32>()));
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+    // @ts-ignore: cast
+    let fd_buf = changetype<ArrayBufferView>(mem64).dataStart;
     let res = path_open(
       dirfd as fd,
       fd_lookup_flags,
@@ -509,8 +526,11 @@ export class FileSystem {
    */
   static mkdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+
     let res = path_create_directory(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -523,8 +543,9 @@ export class FileSystem {
    */
   static exists(path: string): bool {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     let res = path_filestat_get(
@@ -545,11 +566,17 @@ export class FileSystem {
    */
   static link(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
-    let old_path_utf8_len: usize = String.UTF8.byteLength(old_path);
-    let old_path_utf8 = changetype<usize>(String.UTF8.encode(old_path));
+
+    let old_path_utf8_buf = String.UTF8.encode(old_path);
+    let old_path_utf8_len: usize = old_path_utf8_buf.byteLength;
+    let old_path_utf8 = changetype<usize>(old_path_utf8_buf);
+
     let new_dirfd = this.dirfdForPath(new_path);
-    let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
+
+    let new_path_utf8_buf = String.UTF8.encode(new_path);
+    let new_path_utf8_len: usize = new_path_utf8_buf.byteLength;
+    let new_path_utf8 = changetype<usize>(new_path_utf8_buf);
+
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let res = path_link(
       old_dirfd,
@@ -569,11 +596,17 @@ export class FileSystem {
    * @returns `true` on success, `false` on failure
    */
   static symlink(old_path: string, new_path: string): bool {
-    let old_path_utf8_len: usize = String.UTF8.byteLength(old_path);
-    let old_path_utf8 = changetype<usize>(String.UTF8.encode(old_path));
+    let old_path_utf8_buf = String.UTF8.encode(old_path);
+    let old_path_utf8_len: usize = old_path_utf8_buf.byteLength;
+    let old_path_utf8 = changetype<usize>(old_path_utf8_buf);
+
     let new_dirfd = this.dirfdForPath(new_path);
-    let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
+
+    let new_path_utf8_buf = String.UTF8.encode(new_path);
+    let new_path_utf8_len: usize = new_path_utf8_buf.byteLength;
+    let new_path_utf8 = changetype<usize>(new_path_utf8_buf);
+
+
     let res = path_symlink(
       old_path_utf8, old_path_utf8_len,
       new_dirfd,
@@ -590,8 +623,11 @@ export class FileSystem {
    */
   static unlink(path: string): bool {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+
     let res = path_unlink_file(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -604,8 +640,11 @@ export class FileSystem {
    */
   static rmdir(path: string): bool {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+
     let res = path_remove_directory(dirfd, path_utf8, path_utf8_len);
 
     return res === errno.SUCCESS;
@@ -618,8 +657,11 @@ export class FileSystem {
    */
   static stat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+
     let fd_lookup_flags = lookupflags.SYMLINK_FOLLOW;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (path_filestat_get(
@@ -640,8 +682,11 @@ export class FileSystem {
    */
   static lstat(path: string): FileStat {
     let dirfd = this.dirfdForPath(path);
-    let path_utf8_len: usize = String.UTF8.byteLength(path);
-    let path_utf8 = changetype<usize>(String.UTF8.encode(path));
+
+    let path_utf8_buf = String.UTF8.encode(path);
+    let path_utf8_len: usize = path_utf8_buf.byteLength;
+    let path_utf8 = changetype<usize>(path_utf8_buf);
+
     let fd_lookup_flags = 0;
     let st_buf = changetype<usize>(new ArrayBuffer(56));
     if (path_filestat_get(
@@ -663,11 +708,17 @@ export class FileSystem {
    */
   static rename(old_path: string, new_path: string): bool {
     let old_dirfd = this.dirfdForPath(old_path);
-    let old_path_utf8_len: usize = String.UTF8.byteLength(old_path);
-    let old_path_utf8 = changetype<usize>(String.UTF8.encode(old_path));
+
+    let old_path_utf8_buf = String.UTF8.encode(old_path);
+    let old_path_utf8_len: usize = old_path_utf8_buf.byteLength;
+    let old_path_utf8 = changetype<usize>(old_path_utf8_buf);
+
     let new_dirfd = this.dirfdForPath(new_path);
-    let new_path_utf8_len: usize = String.UTF8.byteLength(new_path);
-    let new_path_utf8 = changetype<usize>(String.UTF8.encode(new_path));
+
+    let new_path_utf8_buf = String.UTF8.encode(new_path);
+    let new_path_utf8_len: usize = new_path_utf8_buf.byteLength;
+    let new_path_utf8 = changetype<usize>(new_path_utf8_buf);
+
     let res = path_rename(
       old_dirfd,
       old_path_utf8, old_path_utf8_len,
@@ -689,12 +740,12 @@ export class FileSystem {
       return null;
     }
     let out = new Array<string>();
-    let buf = null;
     let buf_size = 4096;
-    let buf_used_p = changetype<usize>(new ArrayBuffer(4));
+    let buf = __alloc(buf_size, 0);
+    // @ts-ignore: cast
+    let buf_used_p = changetype<ArrayBufferView>(mem64).dataStart;
     let buf_used = 0;
     for (; ;) {
-      buf = __alloc(buf_size, 0);
       if (fd_readdir(fd.rawfd, buf, buf_size, 0 as dircookie, buf_used_p) !== errno.SUCCESS) {
         fd.close();
       }
@@ -703,7 +754,7 @@ export class FileSystem {
         break;
       }
       buf_size <<= 1;
-      __free(buf);
+      buf = __realloc(buf, buf_size);
     }
     let offset = 0;
     while (offset < buf_used) {
@@ -797,7 +848,8 @@ export class Date {
    * Return the current timestamp, as a number of milliseconds since the epoch
    */
   static now(): f64 {
-    let time_ptr = changetype<usize>(new ArrayBuffer(8));
+    // @ts-ignore: cast
+    let time_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     clock_time_get(clockid.REALTIME, 1000000, time_ptr);
     let unix_ts = load<u64>(time_ptr);
 
@@ -807,7 +859,8 @@ export class Date {
 
 export class Performance {
   static now(): f64 {
-    let time_ptr = changetype<usize>(new ArrayBuffer(8));
+    // @ts-ignore: cast
+    let time_ptr = changetype<ArrayBufferView>(mem64).dataStart;
     clock_res_get(clockid.MONOTONIC, time_ptr);
     let res_ts = load<u64>(time_ptr);
 
@@ -820,6 +873,7 @@ export class Process {
    * Cleanly terminate the current process
    * @param status exit code
    */
+  @inline
   static exit(status: u32): void {
     proc_exit(status);
   }
@@ -834,15 +888,15 @@ export class Environ {
 
   constructor() {
     this.env = [];
-    let count_and_size = changetype<usize>(
-      new ArrayBuffer(2 * sizeof<usize>())
-    );
+    // @ts-ignore: cast
+    let count_and_size = changetype<ArrayBufferView>(mem128).dataStart;
+
     let ret = environ_sizes_get(count_and_size, count_and_size + 4);
     if (ret !== errno.SUCCESS) {
       abort();
     }
-    let count = load<usize>(count_and_size);
-    let size = load<usize>(count_and_size + sizeof<usize>());
+    let count = load<usize>(count_and_size, 0);
+    let size  = load<usize>(count_and_size, sizeof<usize>());
     let env_ptrs = changetype<usize>(
       new ArrayBuffer((count + 1) * sizeof<usize>())
     );
@@ -862,6 +916,7 @@ export class Environ {
   /**
    *  Return all environment variables
    */
+  @inline
   all(): Array<EnvironEntry> {
     return this.env;
   }
@@ -871,8 +926,9 @@ export class Environ {
    * @param key environment variable name
    */
   get(key: string): string | null {
-    for (let i = 0, j = this.env.length; i < j; i++) {
-      let pair = this.env[i];
+    let env = this.env;
+    for (let i = 0, j = env.length; i < j; i++) {
+      let pair = env[i];
       if (pair.key == key) {
         return pair.value;
       }
@@ -886,15 +942,14 @@ export class CommandLine {
 
   constructor() {
     this.args = [];
-    let count_and_size = changetype<usize>(
-      new ArrayBuffer(2 * sizeof<usize>())
-    );
+    // @ts-ignore: cast
+    let count_and_size = changetype<ArrayBufferView>(mem128).dataStart;
     let ret = args_sizes_get(count_and_size, count_and_size + 4);
     if (ret !== errno.SUCCESS) {
       abort();
     }
-    let count = load<usize>(count_and_size);
-    let size = load<usize>(count_and_size + sizeof<usize>());
+    let count = load<usize>(count_and_size, 0);
+    let size  = load<usize>(count_and_size, sizeof<usize>());
     let env_ptrs = changetype<usize>(
       new ArrayBuffer((count + 1) * sizeof<usize>())
     );
@@ -912,6 +967,7 @@ export class CommandLine {
   /**
    * Return all the command-line arguments
    */
+  @inline
   all(): Array<string> {
     return this.args;
   }
@@ -921,9 +977,10 @@ export class CommandLine {
    * @param i index
    */
   get(i: usize): string | null {
-    let args_len: usize = this.args[0].length;
+    let args = this.args;
+    let args_len: usize = args[0].length;
     if (i < args_len) {
-      return this.args[i];
+      return unchecked(args[i]);
     }
     return null;
   }
@@ -950,14 +1007,15 @@ export class Time {
 
     // Create a buffer for our number of sleep events
     // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
-    let neventsBuffer: i32 = __alloc(4, 0);
+    // @ts-ignore
+    let neventsBuffer = changetype<ArrayBufferView>(mem64).dataStart;
 
     // Poll the subscription
     poll_oneoff(
       changetype<usize>(clockSub), // Pointer to the clock subscription
       changetype<usize>(clockEvent), // Pointer to the clock event
       1, // Number of events to wait for
-      changetype<usize>(neventsBuffer) // Buffer where events should be stored.
+      neventsBuffer // Buffer where events should be stored.
     );
   }
 }
@@ -968,12 +1026,9 @@ class StringUtils {
    * @param cstring
    * @returns native string
    */
+  @inline
   static fromCString(cstring: usize): string {
-    let size = 0;
-    while (load<u8>(cstring + size) !== 0) {
-      size++;
-    }
-    return String.UTF8.decodeUnsafe(cstring, size);
+    return String.UTF8.decodeUnsafe(cstring, i32.MAX_VALUE, true);
   }
 }
 
