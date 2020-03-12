@@ -92,28 +92,34 @@ export class Descriptor {
   /**
    * An invalid file descriptor, that can represent an error
    */
-  static Invalid(): Descriptor { return new Descriptor(-1); };
+  @inline static get Invalid(): Descriptor { return new Descriptor(-1); };
 
   /**
    * The standard input
    */
-  static Stdin(): Descriptor { return new Descriptor(0); };
+  @inline static get Stdin(): Descriptor { return new Descriptor(0); };
 
   /**
    * The standard output
    */
-  static Stdout(): Descriptor { return new Descriptor(1); };
+  @inline static get Stdout(): Descriptor { return new Descriptor(1); };
 
   /**
    * The standard error
    */
-  static Stderr(): Descriptor { return new Descriptor(2); };
+  @inline static get Stderr(): Descriptor { return new Descriptor(2); };
 
   /**
    * Build a new descriptor from a raw WASI file descriptor
    * @param rawfd a raw file descriptor
    */
-  constructor(readonly rawfd: fd) { }
+  constructor(rawfd: fd) {
+    return changetype<Descriptor>(rawfd);
+  }
+
+  @inline get rawfd(): fd {
+    return changetype<fd>(this);
+  }
 
   /**
    * Hint at how the data accessible via the descriptor will be used
@@ -156,12 +162,12 @@ export class Descriptor {
    * Return the file type
    */
   fileType(): filetype {
-    let st_buf = changetype<usize>(new ArrayBuffer(24));
+    let st_buf = __alloc(24, 0);
     if (fd_fdstat_get(this.rawfd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
       throw new WASIError("Unable to get the file type");
     }
     let file_type = load<u8>(st_buf);
-
+    __free(st_buf);
     return file_type;
   }
 
@@ -376,7 +382,7 @@ export class Descriptor {
   readAll(
     data: u8[] = [],
     chunk_size: usize = 4096
-  ): Array<u8> | null {
+  ): u8[] | null {
     let data_partial_len = chunk_size;
     let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
     // @ts-ignore: cast
@@ -399,10 +405,7 @@ export class Descriptor {
         data.push(load<u8>(data_partial + i));
       }
     }
-    if (read < 0) {
-      return null;
-    }
-    return data;
+    return read <= 0 ? null : data;
   }
 
   /**
@@ -787,14 +790,14 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static write(s: string, newline: bool = true): void {
-    Descriptor.Stdout().writeString(s, newline);
+    Descriptor.Stdout.writeString(s, newline);
   }
 
   /**
    * Read an UTF8 string from the console, convert it to a native string
    */
   static readAll(): string | null {
-    return Descriptor.Stdin().readString();
+    return Descriptor.Stdin.readString();
   }
 
   /**
@@ -810,7 +813,7 @@ export class Console {
    * @param newline `false` to avoid inserting a newline after the string
    */
   static error(s: string, newline: bool = true): void {
-    Descriptor.Stderr().writeString(s, newline);
+    Descriptor.Stderr.writeString(s, newline);
   }
 }
 
@@ -987,9 +990,9 @@ export class CommandLine {
 }
 
 export class Time {
-  static NANOSECOND: i32 = 1;
-  static MILLISECOND: i32 = Time.NANOSECOND * 1000000;
-  static SECOND: i32 = Time.MILLISECOND * 1000;
+  static NANOSECOND: i32  = 1;
+  static MILLISECOND: i32 = Time.NANOSECOND  * 1000000;
+  static SECOND: i32      = Time.MILLISECOND * 1000;
 
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
