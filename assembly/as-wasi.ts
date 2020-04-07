@@ -995,8 +995,13 @@ export class Time {
   static SECOND: i32      = Time.MILLISECOND * 1000;
 
   static sleep(nanoseconds: i32): void {
+
+    let X = 0;
+    let Y = 3;
+    let Z = 0;
+
     // Create our subscription to the clock
-    let clockSub = new subscription_clock();
+    let clockSub = changetype<subscription_clock>(__alloc(offsetof<subscription_clock>() + X, 0));
     clockSub.userdata = 0;
     clockSub.clock_id = clockid.REALTIME;
     clockSub.timeout = nanoseconds;
@@ -1006,20 +1011,24 @@ export class Time {
     // We want this to be relative, no flags / subclockflag
 
     // Create our output event
-    let clockEvent = new event();
+    let clockEvent = changetype<event>(__alloc(offsetof<event>() + Y, 0));
 
     // Create a buffer for our number of sleep events
     // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
     // @ts-ignore
-    let neventsBuffer = changetype<ArrayBufferView>(mem64).dataStart;
+    let neventsBuffer = __alloc(4 + Z, 0);
 
     // Poll the subscription
     poll_oneoff(
       changetype<usize>(clockSub), // Pointer to the clock subscription
       changetype<usize>(clockEvent), // Pointer to the clock event
       1, // Number of events to wait for
-      neventsBuffer // Buffer where events should be stored.
+      changetype<usize>(neventsBuffer) // Buffer where events should be stored.
     );
+
+    __free(neventsBuffer);
+    __free(changetype<usize>(clockEvent));
+    __free(changetype<usize>(clockSub));
   }
 }
 
