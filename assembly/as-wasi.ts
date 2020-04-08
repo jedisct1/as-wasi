@@ -994,9 +994,11 @@ export class Time {
   static MILLISECOND: i32 = Time.NANOSECOND  * 1000000;
   static SECOND: i32      = Time.MILLISECOND * 1000;
 
+  // This uses some hardcoded values to fix issues from:
+  // https://github.com/AssemblyScript/assemblyscript/issues/1116
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
-    let clockSub = new subscription_clock();
+    let clockSub = changetype<subscription_clock>(__alloc(offsetof<subscription_clock>(), 0));
     clockSub.userdata = 0;
     clockSub.clock_id = clockid.REALTIME;
     clockSub.timeout = nanoseconds;
@@ -1006,20 +1008,24 @@ export class Time {
     // We want this to be relative, no flags / subclockflag
 
     // Create our output event
-    let clockEvent = new event();
+    let clockEvent = changetype<event>(__alloc(offsetof<event>() + 3, 0));
 
     // Create a buffer for our number of sleep events
     // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
     // @ts-ignore
-    let neventsBuffer = changetype<ArrayBufferView>(mem64).dataStart;
+    let neventsBuffer = __alloc(4, 0);
 
     // Poll the subscription
     poll_oneoff(
       changetype<usize>(clockSub), // Pointer to the clock subscription
       changetype<usize>(clockEvent), // Pointer to the clock event
       1, // Number of events to wait for
-      neventsBuffer // Buffer where events should be stored.
+      changetype<usize>(neventsBuffer) // Buffer where events should be stored.
     );
+
+    __free(neventsBuffer);
+    __free(changetype<usize>(clockEvent));
+    __free(changetype<usize>(clockSub));
   }
 }
 
