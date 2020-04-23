@@ -2,27 +2,27 @@
 # yarn lockfile v1
 
 
-"@as-pect/assembly@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-2.7.0.tgz#15cf832937e92d9290c5d2434c7aaed66a1a035f"
-  integrity sha512-nc8qENxXzMdWNGBEZ+cqXwVesXUmJ+x5h+uunMb7YXgVXNiLdsgXzd6zpQFUX4qczBOLwFbhUu3XpgWzFwFldg==
+"@as-pect/assembly@^2.8.1":
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-2.8.1.tgz#775c867554283e8ab2ee126be3bfb76305c979cf"
+  integrity sha512-gXxRPvFN7uA/U0U/WHqmk9UMdAervVcyIEV/Dqh/Z1iQEzMgGiRXUzfZZBYoZQ6eAa9wO9dfMAL3GRDRU4/aNg==
 
-"@as-pect/cli@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-2.7.0.tgz#d37102398cfb820df56ce54b04f1b0eb008f3987"
-  integrity sha512-DWuX6EJUZnx2DfmdY5aAXLKqVQejCWWBJscdAL0WDpfOcy51kD6Nvi9SfCmggcCfCCavvn87Kims7szi9U/Ixw==
+"@as-pect/cli@^2.8.1":
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-2.8.1.tgz#c03291bae53788e056f5eed42afeb71b83812554"
+  integrity sha512-F61i7Dn7yO8BjGmPr6pyg6V+/qsk9I3hiZIcjAeutZ4DOHdR/arlofmUHQvJ259DHbfD1sdGdyJ5tfh16pBFvg==
   dependencies:
-    "@as-pect/assembly" "^2.7.0"
-    "@as-pect/core" "^2.7.0"
+    "@as-pect/assembly" "^2.8.1"
+    "@as-pect/core" "^2.8.1"
     chalk "^3.0.0"
     glob "^7.1.6"
 
-"@as-pect/core@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-2.7.0.tgz#dd5f9097ffa9d5b0cbf55796cf754526d5038858"
-  integrity sha512-U2z6bJiqIM/C90tzuJq0UcL07sM72d4wFgetuEe9fmYrV5YI3qwMOoZqLR1Lp585VNAEoVrS6sydge2LW/f1Pg==
+"@as-pect/core@^2.8.1":
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-2.8.1.tgz#d3a4b2df07aec77baad74db622b01786c6606bda"
+  integrity sha512-XGtQLN6p11XN6RNqB9XimAS0wn4BDWnC76vYUQrqakU6s3YKUgric+4BnM5MPN9f7+9jeFk5ZtAB5k4GjxCtbg==
   dependencies:
-    "@as-pect/assembly" "^2.7.0"
+    "@as-pect/assembly" "^2.8.1"
     chalk "^3.0.0"
     long "^4.0.0"
   optionalDependencies:
@@ -42,11 +42,11 @@ ansi-styles@^4.1.0:
     color-convert "^2.0.1"
 
 assemblyscript@^0.9:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.9.0.tgz#2c85f0ff3bad7385484007d10ac65d29416f46c2"
-  integrity sha512-HDDoaDfdnp0Ki/k272ib12sKz3ytVlXsIDise5meamInLC1qZAcmwwO+aqNyiVksmPYyLhQlaVZRPKWibHqo3g==
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.9.4.tgz#d535ad6e9299c9d3b9881ff08c3101298d53cb1a"
+  integrity sha512-GabjIxYt5uI3nyZNYzw6VtHyZcjVtcw8tbtEbXGvbrp3+A5p3zQ2yrU03tSiRR+WTeGx2aS8c6T+y2gGfjyvqw==
   dependencies:
-    binaryen "90.0.0-nightly.20200111"
+    binaryen "91.0.0-nightly.20200310"
     long "^4.0.0"
 
 balanced-match@^1.0.0:
@@ -54,10 +54,10 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-binaryen@90.0.0-nightly.20200111:
-  version "90.0.0-nightly.20200111"
-  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-90.0.0-nightly.20200111.tgz#dc5cfa53a7c2cb97a785a64ca041effd6ae66c4a"
-  integrity sha512-2uihf1tqfkG2OJB54LjIDu5/fqbGgbj9VSwnj8hYtsRfML61y0uHeMkPfWctyl99m7hsgyDu7xUbJ7iyqBz6BA==
+binaryen@91.0.0-nightly.20200310:
+  version "91.0.0-nightly.20200310"
+  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-91.0.0-nightly.20200310.tgz#f2c60020fef1fb5ac0e436b9a0e01b25c484c0b4"
+  integrity sha512-MmDzq267aa61HdEQeYiz+7guJlsYk2/6NxWC8I4w1jijqDwoqyZZxi7UYnTH7QvfLrNdMjweEgfT7FHjkvkPmQ==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
