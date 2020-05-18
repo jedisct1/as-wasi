@@ -52,9 +52,7 @@ import {
   rights,
 } from "bindings/wasi";
 
-@lazy const mem64:  u64[] = [0];
-@lazy const mem128: u64[] = [0, 0];
-@lazy const mem256: u64[] = [0, 0, 0, 0];
+type aisize = i32;
 
 /**
  * A WASI error
@@ -163,11 +161,13 @@ export class Descriptor {
    * Return the file type
    */
   fileType(): filetype {
+    // @ts-ignore
     let st_buf = __alloc(24, 0);
     if (fd_fdstat_get(this.rawfd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
       throw new WASIError("Unable to get the file type");
     }
     let file_type = load<u8>(st_buf);
+    // @ts-ignore
     __free(st_buf);
     return file_type;
   }
@@ -263,15 +263,18 @@ export class Descriptor {
    */
   dirName(): string {
     let path_max = 4096 as usize;
+    // @ts-ignore
     let path_buf = __alloc(path_max, 0);
     while (true) {
       let ret = fd_prestat_dir_name(this.rawfd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
         path_max *= 2;
+        // @ts-ignore
         path_buf = __realloc(path_buf, path_max);
         continue;
       }
       let path = String.UTF8.decodeUnsafe(path_buf, path_max, true);
+      // @ts-ignore
       __free(path_buf);
       return path;
     }
@@ -294,13 +297,10 @@ export class Descriptor {
     // @ts-ignore: cast
     let data_buf_in = changetype<ArrayBufferView>(data).dataStart;
     memory.copy(data_buf_out, data_buf_in, data_buf_len);
-    // @ts-ignore: cast
-    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    let iov = memory.data(16);
     store<u32>(iov, data_buf_out, 0);
     store<u32>(iov, data_buf_len, sizeof<usize>());
-
-    // @ts-ignore: cast
-    let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let written_ptr = memory.data(8);
     fd_write(this.rawfd, iov, 1, written_ptr);
   }
 
@@ -316,13 +316,11 @@ export class Descriptor {
     }
     let s_utf8_buf = String.UTF8.encode(s);
     let s_utf8_len: usize = s_utf8_buf.byteLength;
-    // @ts-ignore: cast
-    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    let iov = memory.data(16);
     store<u32>(iov, changetype<usize>(s_utf8_buf));
     store<u32>(iov, s_utf8_len, sizeof<usize>());
 
-    // @ts-ignore: cast
-    let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let written_ptr = memory.data(8);
     fd_write(this.rawfd, iov, 1, written_ptr);
   }
 
@@ -333,18 +331,15 @@ export class Descriptor {
   writeStringLn(s: string): void {
     let s_utf8_buf = String.UTF8.encode(s);
     let s_utf8_len: usize = s_utf8_buf.byteLength;
-    // @ts-ignore: cast
-    let iov = changetype<ArrayBufferView>(mem256).dataStart;
+    let iov = memory.data(32);
     store<u32>(iov, changetype<usize>(s_utf8_buf));
     store<u32>(iov, s_utf8_len, sizeof<usize>());
-    // @ts-ignore: cast
-    let lf = changetype<ArrayBufferView>(mem64).dataStart;
+    let lf = memory.data(8);
     store<u8>(lf, 10);
     store<u32>(iov, lf, sizeof<usize>() * 2);
-    store<u32>(iov,  1, sizeof<usize>() * 3);
+    store<u32>(iov, 1, sizeof<usize>() * 3);
 
-    // @ts-ignore: cast
-    let written_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let written_ptr = memory.data(8);
     fd_write(this.rawfd, iov, 2, written_ptr);
   }
 
@@ -358,13 +353,11 @@ export class Descriptor {
     chunk_size: usize = 4096
   ): u8[] | null {
     let data_partial_len = chunk_size;
-    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
-    // @ts-ignore: cast
-    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len as aisize));
+    let iov = memory.data(16);
     store<u32>(iov, data_partial, 0);
     store<u32>(iov, data_partial_len, sizeof<usize>());
-    // @ts-ignore: cast
-    let read_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let read_ptr = memory.data(8);
     fd_read(this.rawfd, iov, 1, read_ptr);
     let read = load<usize>(read_ptr);
     if (read > 0) {
@@ -385,13 +378,11 @@ export class Descriptor {
     chunk_size: usize = 4096
   ): u8[] | null {
     let data_partial_len = chunk_size;
-    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len));
-    // @ts-ignore: cast
-    let iov = changetype<ArrayBufferView>(mem128).dataStart;
+    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len as aisize));
+    let iov = memory.data(16);
     store<u32>(iov, data_partial, 0);
     store<u32>(iov, data_partial_len, sizeof<usize>());
-    // @ts-ignore: cast
-    let read_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let read_ptr = memory.data(8);
     let read: usize = 0;
     let rawfd = this.rawfd;
     while (true) {
@@ -428,8 +419,7 @@ export class Descriptor {
    * @w the position relative to which to set the offset of the file descriptor.
    */
   seek(off: u64, w: whence): bool {
-    // @ts-ignore: cast
-    let fodder = changetype<ArrayBufferView>(mem64).dataStart;
+    let fodder = memory.data(8);
     let res = fd_seek(this.rawfd, off, w, fodder);
 
     return res === errno.SUCCESS;
@@ -440,8 +430,7 @@ export class Descriptor {
    * @returns offset
    */
   tell(): u64 {
-    // @ts-ignore: cast
-    let buf_off = changetype<ArrayBufferView>(mem64).dataStart;
+    let buf_off = memory.data(8);
     let res = fd_tell(this.rawfd, buf_off);
     if (res !== errno.SUCCESS) {
       abort();
@@ -472,7 +461,7 @@ export class FileSystem {
     } else if (flags == "r+") {
       fd_rights =
         rights.FD_WRITE |
-        rights.FD_READ  | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
+        rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
         rights.PATH_CREATE_FILE;
     } else if (flags == "w") {
       fd_oflags = oflags.CREAT | oflags.TRUNC;
@@ -488,13 +477,13 @@ export class FileSystem {
       fd_oflags = oflags.CREAT | oflags.TRUNC;
       fd_rights =
         rights.FD_WRITE |
-        rights.FD_READ  | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
+        rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
         rights.PATH_CREATE_FILE;
     } else if (flags == "xw+") {
       fd_oflags = oflags.CREAT | oflags.TRUNC | oflags.EXCL;
       fd_rights =
         rights.FD_WRITE |
-        rights.FD_READ  | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
+        rights.FD_READ | rights.FD_SEEK | rights.FD_TELL | rights.FD_FILESTAT_GET |
         rights.PATH_CREATE_FILE;
     } else {
       return null;
@@ -504,8 +493,7 @@ export class FileSystem {
     let path_utf8_buf = String.UTF8.encode(path);
     let path_utf8_len: usize = path_utf8_buf.byteLength;
     let path_utf8 = changetype<usize>(path_utf8_buf);
-    // @ts-ignore: cast
-    let fd_buf = changetype<ArrayBufferView>(mem64).dataStart;
+    let fd_buf = memory.data(8);
     let res = path_open(
       dirfd as fd,
       fd_lookup_flags,
@@ -745,9 +733,9 @@ export class FileSystem {
     }
     let out = new Array<string>();
     let buf_size = 4096;
+    // @ts-ignore
     let buf = __alloc(buf_size, 0);
-    // @ts-ignore: cast
-    let buf_used_p = changetype<ArrayBufferView>(mem64).dataStart;
+    let buf_used_p = memory.data(8);
     let buf_used = 0;
     for (; ;) {
       if (fd_readdir(fd.rawfd, buf, buf_size, 0 as dircookie, buf_used_p) !== errno.SUCCESS) {
@@ -758,6 +746,7 @@ export class FileSystem {
         break;
       }
       buf_size <<= 1;
+      // @ts-ignore
       buf = __realloc(buf, buf_size);
     }
     let offset = 0;
@@ -772,6 +761,7 @@ export class FileSystem {
       out.push(name);
       offset += name_len;
     }
+    // @ts-ignore
     __free(buf);
     fd.close();
 
@@ -841,7 +831,7 @@ export class Random {
    * @param len length
    */
   static randomBytes(len: usize): Uint8Array {
-    let array = new Uint8Array(len);
+    let array = new Uint8Array(len as aisize);
     this.randomFill(array.buffer);
     return array;
   }
@@ -852,8 +842,7 @@ export class Date {
    * Return the current timestamp, as a number of milliseconds since the epoch
    */
   static now(): f64 {
-    // @ts-ignore: cast
-    let time_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let time_ptr = memory.data(8);
     clock_time_get(clockid.REALTIME, 1000000, time_ptr);
     let unix_ts = load<u64>(time_ptr);
 
@@ -863,8 +852,7 @@ export class Date {
 
 export class Performance {
   static now(): f64 {
-    // @ts-ignore: cast
-    let time_ptr = changetype<ArrayBufferView>(mem64).dataStart;
+    let time_ptr = memory.data(8);
     clock_res_get(clockid.MONOTONIC, time_ptr);
     let res_ts = load<u64>(time_ptr);
 
@@ -892,19 +880,17 @@ export class Environ {
 
   constructor() {
     this.env = [];
-    // @ts-ignore: cast
-    let count_and_size = changetype<ArrayBufferView>(mem128).dataStart;
-
+    let count_and_size = memory.data(16);
     let ret = environ_sizes_get(count_and_size, count_and_size + 4);
     if (ret !== errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size, 0);
-    let size  = load<usize>(count_and_size, sizeof<usize>());
+    let size = load<usize>(count_and_size, sizeof<usize>());
     let env_ptrs = changetype<usize>(
-      new ArrayBuffer((count + 1) * sizeof<usize>())
+      new ArrayBuffer((count as aisize + 1) * sizeof<usize>())
     );
-    let buf = changetype<usize>(new ArrayBuffer(size));
+    let buf = changetype<usize>(new ArrayBuffer(size as aisize));
     if (environ_get(env_ptrs, buf) !== errno.SUCCESS) {
       abort();
     }
@@ -946,18 +932,17 @@ export class CommandLine {
 
   constructor() {
     this.args = [];
-    // @ts-ignore: cast
-    let count_and_size = changetype<ArrayBufferView>(mem128).dataStart;
+    let count_and_size = memory.data(16);
     let ret = args_sizes_get(count_and_size, count_and_size + 4);
     if (ret !== errno.SUCCESS) {
       abort();
     }
     let count = load<usize>(count_and_size, 0);
-    let size  = load<usize>(count_and_size, sizeof<usize>());
+    let size = load<usize>(count_and_size, sizeof<usize>());
     let env_ptrs = changetype<usize>(
-      new ArrayBuffer((count + 1) * sizeof<usize>())
+      new ArrayBuffer((count as aisize + 1) * sizeof<usize>())
     );
-    let buf = changetype<usize>(new ArrayBuffer(size));
+    let buf = changetype<usize>(new ArrayBuffer(size as aisize));
     if (args_get(env_ptrs, buf) !== errno.SUCCESS) {
       abort();
     }
@@ -984,21 +969,22 @@ export class CommandLine {
     let args = this.args;
     let args_len: usize = args[0].length;
     if (i < args_len) {
-      return unchecked(args[i]);
+      return unchecked(args[i as aisize]);
     }
     return null;
   }
 }
 
 export class Time {
-  static NANOSECOND: i32  = 1;
-  static MILLISECOND: i32 = Time.NANOSECOND  * 1000000;
-  static SECOND: i32      = Time.MILLISECOND * 1000;
+  static NANOSECOND: i32 = 1;
+  static MILLISECOND: i32 = Time.NANOSECOND * 1000000;
+  static SECOND: i32 = Time.MILLISECOND * 1000;
 
   // This uses some hardcoded values to fix issues from:
   // https://github.com/AssemblyScript/assemblyscript/issues/1116
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
+    // @ts-ignore
     let clockSub = changetype<subscription_clock>(__alloc(offsetof<subscription_clock>(), 0));
     clockSub.userdata = 0;
     clockSub.clock_id = clockid.REALTIME;
@@ -1009,6 +995,7 @@ export class Time {
     // We want this to be relative, no flags / subclockflag
 
     // Create our output event
+    // @ts-ignore
     let clockEvent = changetype<event>(__alloc(offsetof<event>() + 3, 0));
 
     // Create a buffer for our number of sleep events
@@ -1023,9 +1010,11 @@ export class Time {
       1, // Number of events to wait for
       changetype<usize>(neventsBuffer) // Buffer where events should be stored.
     );
-
+    // @ts-ignore
     __free(neventsBuffer);
+    // @ts-ignore
     __free(changetype<usize>(clockEvent));
+    // @ts-ignore
     __free(changetype<usize>(clockSub));
   }
 }
@@ -1042,6 +1031,7 @@ class StringUtils {
   }
 }
 
+// @ts-ignore: decorator
 @global
 export function wasi_abort(
   message: string = "",
