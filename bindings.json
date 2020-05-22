@@ -2,7 +2,7 @@
     "env": {
         "abort": "abort"
     },
-    "wasi_unstable": {
+    "wasi_snapshot_preview1": {
         "args_get": "__wasi_args_get",
         "args_sizes_get": "__wasi_args_sizes_get",
         "clock_res_get": "__wasi_clock_res_get",
