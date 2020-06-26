@@ -162,14 +162,11 @@ export class Descriptor {
    */
   fileType(): filetype {
     // @ts-ignore
-    let st_buf = __alloc(24, 0);
+    let st_buf = memory.data(24);
     if (fd_fdstat_get(this.rawfd, changetype<fdstat>(st_buf)) !== errno.SUCCESS) {
       throw new WASIError("Unable to get the file type");
     }
-    let file_type = load<u8>(st_buf);
-    // @ts-ignore
-    __free(st_buf);
-    return file_type;
+    return load<u8>(st_buf);
   }
 
   /**
@@ -735,6 +732,7 @@ export class FileSystem {
     let buf_size = 4096;
     // @ts-ignore
     let buf = __alloc(buf_size, 0);
+    // @ts-ignore
     let buf_used_p = memory.data(8);
     let buf_used = 0;
     for (; ;) {
@@ -984,8 +982,10 @@ export class Time {
   // https://github.com/AssemblyScript/assemblyscript/issues/1116
   static sleep(nanoseconds: i32): void {
     // Create our subscription to the clock
-    // @ts-ignore
-    let clockSub = changetype<subscription_clock>(__alloc(offsetof<subscription_clock>(), 0));
+    let clockSub = changetype<subscription_clock>(
+      // @ts-ignore
+      memory.data(offsetof<subscription_clock>())
+    );
     clockSub.userdata = 0;
     clockSub.clock_id = clockid.REALTIME;
     clockSub.timeout = nanoseconds;
@@ -996,26 +996,20 @@ export class Time {
 
     // Create our output event
     // @ts-ignore
-    let clockEvent = changetype<event>(__alloc(offsetof<event>() + 3, 0));
+    let clockEvent = memory.data(offsetof<event>() + 3);
 
     // Create a buffer for our number of sleep events
     // To inspect how many events happened, one would then do load<i32>(neventsBuffer)
     // @ts-ignore
-    let neventsBuffer = __alloc(4, 0);
+    let neventsBuffer = memory.data(4);
 
     // Poll the subscription
     poll_oneoff(
       changetype<usize>(clockSub), // Pointer to the clock subscription
-      changetype<usize>(clockEvent), // Pointer to the clock event
+      clockEvent, // Pointer to the clock event
       1, // Number of events to wait for
-      changetype<usize>(neventsBuffer) // Buffer where events should be stored.
+      neventsBuffer // Buffer where events should be stored.
     );
-    // @ts-ignore
-    __free(neventsBuffer);
-    // @ts-ignore
-    __free(changetype<usize>(clockEvent));
-    // @ts-ignore
-    __free(changetype<usize>(clockSub));
   }
 }
 
