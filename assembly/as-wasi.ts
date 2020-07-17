@@ -1021,7 +1021,11 @@ class StringUtils {
    */
   @inline
   static fromCString(cstring: usize): string {
-    return String.UTF8.decodeUnsafe(cstring, i32.MAX_VALUE, true);
+    let size = 0;
+    while (load<u8>(cstring + size) !== 0) {
+      size++;
+    }
+    return String.UTF8.decodeUnsafe(cstring, size);
   }
 }
 
