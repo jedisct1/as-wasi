@@ -8,6 +8,6 @@
     "asbuild": "npm run asbuild:optimized"
   },
   "devDependencies": {
-    "assemblyscript": "^0.13"
+    "assemblyscript": "^0.14"
   }
 }
