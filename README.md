@@ -8,9 +8,9 @@
 
 <!--- Short Description-->
 
-A high-level AssemblyScript layer for the WebAssembly System Interface (WASI).
+A high-level AssemblyScript layer for the WebAssembly System Interface (WASI). 🧩
 
-[WASI](https://wasi.dev) is an API providing access to the external world to WebAssembly modules. AssemblyScript exposes the low-level WASI standard set of system calls. `as-wasi` builds a higher level API on top of the AssemblyScript WASI interface, at a similar level to the [Node API](https://nodejs.org/docs/latest/api/).
+[WASI](https://wasi.dev) is an API providing access to the external world to WebAssembly modules. AssemblyScript exposes the low-level WASI standard set of system calls. `as-wasi` builds a higher level API on top of the AssemblyScript WASI interface, at a similar level to the [Node API](https://nodejs.org/docs/latest/api/). 🚀
 
 ## Installation
 
@@ -36,9 +36,19 @@ let home = env.get("HOME")!;
 Console.log(home);
 ```
 
+Here are some exported classes that are commonly used:
+
+* `FileSystem` - Reading and Writing the user's fileystem. 📁
+* `Console` - General logging to stdout and stderr. 🖥️
+* `Environ` - Accessing environment variables, command flags, etc... 🌐
+* `Date` - Getting the current system time. 📅
+* `Random` - Accessing random numbers. 🤔
+* `Time` - Allow sleeping and waiting for events to occur. ⏰
+* And More! See the Reference API in the next section for the full API.
+
 ## Reference API Docs
 
-Reference API documentation can be found in [REFERENCE_API_DOCS](./REFERENCE_API_DOCS.md).
+Reference API documentation can be found in [REFERENCE_API_DOCS](./REFERENCE_API_DOCS.md). Documentation is generated using [typedoc](https://typedoc.org/).
 
 ## Projects using as-wasi
 
