@@ -1,87 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-
-- [as-wasi](#as-wasi)
-  - [Index](#index)
-    - [Classes](#classes)
-    - [Type aliases](#type-aliases)
-    - [Functions](#functions)
-  - [Type aliases](#type-aliases-1)
-    - [aisize](#aisize)
-  - [Functions](#functions-1)
-    - [wasi_abort](#wasi_abort)
-- [Classes](#classes-1)
-  - [Class: CommandLine](#class-commandline)
-    - [Hierarchy](#hierarchy)
-    - [Index](#index-1)
-    - [Constructors](#constructors)
-    - [Properties](#properties)
-    - [Methods](#methods)
-  - [Class: Console](#class-console)
-    - [Hierarchy](#hierarchy-1)
-    - [Index](#index-2)
-    - [Methods](#methods-1)
-  - [Class: Date](#class-date)
-    - [Hierarchy](#hierarchy-2)
-    - [Index](#index-3)
-    - [Methods](#methods-2)
-  - [Class: Descriptor](#class-descriptor)
-    - [Hierarchy](#hierarchy-3)
-    - [Index](#index-4)
-    - [Constructors](#constructors-1)
-    - [Accessors](#accessors)
-    - [Methods](#methods-3)
-  - [Class: Environ](#class-environ)
-    - [Hierarchy](#hierarchy-4)
-    - [Index](#index-5)
-    - [Constructors](#constructors-2)
-    - [Properties](#properties-1)
-    - [Methods](#methods-4)
-  - [Class: EnvironEntry](#class-environentry)
-    - [Hierarchy](#hierarchy-5)
-    - [Index](#index-6)
-    - [Constructors](#constructors-3)
-    - [Properties](#properties-2)
-  - [Class: FileStat](#class-filestat)
-    - [Hierarchy](#hierarchy-6)
-    - [Index](#index-7)
-    - [Constructors](#constructors-4)
-    - [Properties](#properties-3)
-  - [Class: FileSystem](#class-filesystem)
-    - [Hierarchy](#hierarchy-7)
-    - [Index](#index-8)
-    - [Methods](#methods-5)
-  - [Class: Performance](#class-performance)
-    - [Hierarchy](#hierarchy-8)
-    - [Index](#index-9)
-    - [Methods](#methods-6)
-  - [Class: Process](#class-process)
-    - [Hierarchy](#hierarchy-9)
-    - [Index](#index-10)
-    - [Methods](#methods-7)
-  - [Class: Random](#class-random)
-    - [Hierarchy](#hierarchy-10)
-    - [Index](#index-11)
-    - [Methods](#methods-8)
-  - [Class: StringUtils](#class-stringutils)
-    - [Hierarchy](#hierarchy-11)
-    - [Index](#index-12)
-    - [Methods](#methods-9)
-  - [Class: Time](#class-time)
-    - [Hierarchy](#hierarchy-12)
-    - [Index](#index-13)
-    - [Properties](#properties-4)
-    - [Methods](#methods-10)
-  - [Class: WASIError](#class-wasierror)
-    - [Hierarchy](#hierarchy-13)
-    - [Index](#index-14)
-    - [Constructors](#constructors-5)
-    - [Properties](#properties-5)
-    - [Methods](#methods-11)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 
 <a name="readmemd"></a>
 
@@ -122,7 +38,7 @@
 
 Ƭ **aisize**: *i32*
 
-*Defined in [assembly/as-wasi.ts:55](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L55)*
+*Defined in [assembly/as-wasi.ts:55](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L55)*
 
 ## Functions
 
@@ -130,7 +46,7 @@
 
 ▸ **wasi_abort**(`message`: string, `fileName`: string, `lineNumber`: u32, `columnNumber`: u32): *void*
 
-*Defined in [assembly/as-wasi.ts:1034](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L1034)*
+*Defined in [assembly/as-wasi.ts:1034](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L1034)*
 
 **Parameters:**
 
@@ -177,7 +93,7 @@ Name | Type | Default |
 
 \+ **new CommandLine**(): *[CommandLine](#classescommandlinemd)*
 
-*Defined in [assembly/as-wasi.ts:929](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L929)*
+*Defined in [assembly/as-wasi.ts:929](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L929)*
 
 **Returns:** *[CommandLine](#classescommandlinemd)*
 
@@ -187,7 +103,7 @@ Name | Type | Default |
 
 • **args**: *string[]*
 
-*Defined in [assembly/as-wasi.ts:929](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L929)*
+*Defined in [assembly/as-wasi.ts:929](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L929)*
 
 ### Methods
 
@@ -195,7 +111,7 @@ Name | Type | Default |
 
 ▸ **all**(): *Array‹string›*
 
-*Defined in [assembly/as-wasi.ts:958](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L958)*
+*Defined in [assembly/as-wasi.ts:958](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L958)*
 
 Return all the command-line arguments
 
@@ -207,7 +123,7 @@ ___
 
 ▸ **get**(`i`: usize): *string | null*
 
-*Defined in [assembly/as-wasi.ts:966](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L966)*
+*Defined in [assembly/as-wasi.ts:966](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L966)*
 
 Return the i-th command-ine argument
 
@@ -245,7 +161,7 @@ Name | Type | Description |
 
 ▸ **error**(`s`: string, `newline`: bool): *void*
 
-*Defined in [assembly/as-wasi.ts:804](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L804)*
+*Defined in [assembly/as-wasi.ts:804](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L804)*
 
 Write an error to the console
 
@@ -264,7 +180,7 @@ ___
 
 ▸ **log**(`s`: string): *void*
 
-*Defined in [assembly/as-wasi.ts:795](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L795)*
+*Defined in [assembly/as-wasi.ts:795](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L795)*
 
 Alias for `Console.write()`
 
@@ -282,7 +198,7 @@ ___
 
 ▸ **readAll**(): *string | null*
 
-*Defined in [assembly/as-wasi.ts:788](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L788)*
+*Defined in [assembly/as-wasi.ts:788](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L788)*
 
 Read an UTF8 string from the console, convert it to a native string
 
@@ -294,7 +210,7 @@ ___
 
 ▸ **write**(`s`: string, `newline`: bool): *void*
 
-*Defined in [assembly/as-wasi.ts:781](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L781)*
+*Defined in [assembly/as-wasi.ts:781](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L781)*
 
 Write a string to the console
 
@@ -330,7 +246,7 @@ Name | Type | Default | Description |
 
 ▸ **now**(): *f64*
 
-*Defined in [assembly/as-wasi.ts:842](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L842)*
+*Defined in [assembly/as-wasi.ts:842](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L842)*
 
 Return the current timestamp, as a number of milliseconds since the epoch
 
@@ -394,7 +310,7 @@ A descriptor, that doesn't necessarily have to represent a file
 
 \+ **new Descriptor**(`rawfd`: fd): *[Descriptor](#classesdescriptormd)*
 
-*Defined in [assembly/as-wasi.ts:109](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L109)*
+*Defined in [assembly/as-wasi.ts:109](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L109)*
 
 Build a new descriptor from a raw WASI file descriptor
 
@@ -412,7 +328,7 @@ Name | Type | Description |
 
 • **get rawfd**(): *fd*
 
-*Defined in [assembly/as-wasi.ts:119](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L119)*
+*Defined in [assembly/as-wasi.ts:119](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L119)*
 
 **Returns:** *fd*
 
@@ -422,7 +338,7 @@ ___
 
 • **get Invalid**(): *[Descriptor](#classesdescriptormd)*
 
-*Defined in [assembly/as-wasi.ts:94](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L94)*
+*Defined in [assembly/as-wasi.ts:94](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L94)*
 
 An invalid file descriptor, that can represent an error
 
@@ -434,7 +350,7 @@ ___
 
 • **get Stderr**(): *[Descriptor](#classesdescriptormd)*
 
-*Defined in [assembly/as-wasi.ts:109](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L109)*
+*Defined in [assembly/as-wasi.ts:109](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L109)*
 
 The standard error
 
@@ -446,7 +362,7 @@ ___
 
 • **get Stdin**(): *[Descriptor](#classesdescriptormd)*
 
-*Defined in [assembly/as-wasi.ts:99](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L99)*
+*Defined in [assembly/as-wasi.ts:99](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L99)*
 
 The standard input
 
@@ -458,7 +374,7 @@ ___
 
 • **get Stdout**(): *[Descriptor](#classesdescriptormd)*
 
-*Defined in [assembly/as-wasi.ts:104](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L104)*
+*Defined in [assembly/as-wasi.ts:104](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L104)*
 
 The standard output
 
@@ -470,7 +386,7 @@ The standard output
 
 ▸ **advise**(`offset`: u64, `len`: u64, `advice`: advice): *bool*
 
-*Defined in [assembly/as-wasi.ts:130](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L130)*
+*Defined in [assembly/as-wasi.ts:130](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L130)*
 
 Hint at how the data accessible via the descriptor will be used
 
@@ -498,7 +414,7 @@ ___
 
 ▸ **allocate**(`offset`: u64, `len`: u64): *bool*
 
-*Defined in [assembly/as-wasi.ts:140](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L140)*
+*Defined in [assembly/as-wasi.ts:140](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L140)*
 
 Preallocate data
 
@@ -519,7 +435,7 @@ ___
 
 ▸ **close**(): *void*
 
-*Defined in [assembly/as-wasi.ts:283](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L283)*
+*Defined in [assembly/as-wasi.ts:283](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L283)*
 
 Close a file descriptor
 
@@ -531,7 +447,7 @@ ___
 
 ▸ **dirName**(): *string*
 
-*Defined in [assembly/as-wasi.ts:261](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L261)*
+*Defined in [assembly/as-wasi.ts:261](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L261)*
 
 Return the directory associated to that descriptor
 
@@ -543,7 +459,7 @@ ___
 
 ▸ **fatime**(`ts`: f64): *bool*
 
-*Defined in [assembly/as-wasi.ts:207](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L207)*
+*Defined in [assembly/as-wasi.ts:207](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L207)*
 
 Update the access time
 
@@ -565,7 +481,7 @@ ___
 
 ▸ **fdatasync**(): *bool*
 
-*Defined in [assembly/as-wasi.ts:148](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L148)*
+*Defined in [assembly/as-wasi.ts:148](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L148)*
 
 Wait for the data to be written
 
@@ -579,7 +495,7 @@ ___
 
 ▸ **fileType**(): *filetype*
 
-*Defined in [assembly/as-wasi.ts:163](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L163)*
+*Defined in [assembly/as-wasi.ts:163](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L163)*
 
 Return the file type
 
@@ -591,7 +507,7 @@ ___
 
 ▸ **fmtime**(`ts`: f64): *bool*
 
-*Defined in [assembly/as-wasi.ts:219](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L219)*
+*Defined in [assembly/as-wasi.ts:219](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L219)*
 
 Update the modification time
 
@@ -613,7 +529,7 @@ ___
 
 ▸ **fsync**(): *bool*
 
-*Defined in [assembly/as-wasi.ts:156](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L156)*
+*Defined in [assembly/as-wasi.ts:156](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L156)*
 
 Wait for the data and metadata to be written
 
@@ -627,7 +543,7 @@ ___
 
 ▸ **ftruncate**(`size`: u64): *bool*
 
-*Defined in [assembly/as-wasi.ts:198](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L198)*
+*Defined in [assembly/as-wasi.ts:198](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L198)*
 
 Change the size of a file
 
@@ -647,7 +563,7 @@ ___
 
 ▸ **futimes**(`atime`: f64, `mtime`: f64): *bool*
 
-*Defined in [assembly/as-wasi.ts:232](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L232)*
+*Defined in [assembly/as-wasi.ts:232](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L232)*
 
 Update both the access and the modification times
 
@@ -672,7 +588,7 @@ ___
 
 ▸ **read**(`data`: u8[], `chunk_size`: usize): *u8[] | null*
 
-*Defined in [assembly/as-wasi.ts:348](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L348)*
+*Defined in [assembly/as-wasi.ts:348](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L348)*
 
 Read data from a file descriptor
 
@@ -691,7 +607,7 @@ ___
 
 ▸ **readAll**(`data`: u8[], `chunk_size`: usize): *u8[] | null*
 
-*Defined in [assembly/as-wasi.ts:373](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L373)*
+*Defined in [assembly/as-wasi.ts:373](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L373)*
 
 Read from a file descriptor until the end of the stream
 
@@ -710,7 +626,7 @@ ___
 
 ▸ **readString**(`chunk_size`: usize): *string | null*
 
-*Defined in [assembly/as-wasi.ts:404](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L404)*
+*Defined in [assembly/as-wasi.ts:404](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L404)*
 
 Read an UTF8 string from a file descriptor, convert it to a native string
 
@@ -728,7 +644,7 @@ ___
 
 ▸ **seek**(`off`: u64, `w`: whence): *bool*
 
-*Defined in [assembly/as-wasi.ts:418](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L418)*
+*Defined in [assembly/as-wasi.ts:418](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L418)*
 
 Seek into a stream
 
@@ -751,7 +667,7 @@ ___
 
 ▸ **setFlags**(`flags`: fdflags): *bool*
 
-*Defined in [assembly/as-wasi.ts:177](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L177)*
+*Defined in [assembly/as-wasi.ts:177](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L177)*
 
 Set WASI flags for that descriptor
 
@@ -773,7 +689,7 @@ ___
 
 ▸ **stat**(): *[FileStat](#classesfilestatmd)*
 
-*Defined in [assembly/as-wasi.ts:185](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L185)*
+*Defined in [assembly/as-wasi.ts:185](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L185)*
 
 Retrieve information about a descriptor
 
@@ -787,7 +703,7 @@ ___
 
 ▸ **tell**(): *u64*
 
-*Defined in [assembly/as-wasi.ts:429](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L429)*
+*Defined in [assembly/as-wasi.ts:429](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L429)*
 
 Return the current offset in the stream
 
@@ -801,7 +717,7 @@ ___
 
 ▸ **touch**(): *bool*
 
-*Defined in [assembly/as-wasi.ts:247](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L247)*
+*Defined in [assembly/as-wasi.ts:247](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L247)*
 
 Update the timestamp of the object represented by the descriptor
 
@@ -815,7 +731,7 @@ ___
 
 ▸ **write**(`data`: u8[]): *void*
 
-*Defined in [assembly/as-wasi.ts:291](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L291)*
+*Defined in [assembly/as-wasi.ts:291](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L291)*
 
 Write data to a file descriptor
 
@@ -833,7 +749,7 @@ ___
 
 ▸ **writeString**(`s`: string, `newline`: bool): *void*
 
-*Defined in [assembly/as-wasi.ts:309](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L309)*
+*Defined in [assembly/as-wasi.ts:309](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L309)*
 
 Write a string to a file descriptor, after encoding it to UTF8
 
@@ -852,7 +768,7 @@ ___
 
 ▸ **writeStringLn**(`s`: string): *void*
 
-*Defined in [assembly/as-wasi.ts:328](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L328)*
+*Defined in [assembly/as-wasi.ts:328](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L328)*
 
 Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
@@ -896,7 +812,7 @@ Name | Type | Description |
 
 \+ **new Environ**(): *[Environ](#classesenvironmd)*
 
-*Defined in [assembly/as-wasi.ts:877](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L877)*
+*Defined in [assembly/as-wasi.ts:877](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L877)*
 
 **Returns:** *[Environ](#classesenvironmd)*
 
@@ -906,7 +822,7 @@ Name | Type | Description |
 
 • **env**: *Array‹[EnvironEntry](#classesenvironentrymd)›*
 
-*Defined in [assembly/as-wasi.ts:877](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L877)*
+*Defined in [assembly/as-wasi.ts:877](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L877)*
 
 ### Methods
 
@@ -914,7 +830,7 @@ Name | Type | Description |
 
 ▸ **all**(): *Array‹[EnvironEntry](#classesenvironentrymd)›*
 
-*Defined in [assembly/as-wasi.ts:908](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L908)*
+*Defined in [assembly/as-wasi.ts:908](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L908)*
 
  Return all environment variables
 
@@ -926,7 +842,7 @@ ___
 
 ▸ **get**(`key`: string): *string | null*
 
-*Defined in [assembly/as-wasi.ts:916](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L916)*
+*Defined in [assembly/as-wasi.ts:916](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L916)*
 
 Return the value for an environment variable
 
@@ -966,7 +882,7 @@ Name | Type | Description |
 
 \+ **new EnvironEntry**(`key`: string, `value`: string): *[EnvironEntry](#classesenvironentrymd)*
 
-*Defined in [assembly/as-wasi.ts:872](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L872)*
+*Defined in [assembly/as-wasi.ts:872](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L872)*
 
 **Parameters:**
 
@@ -983,7 +899,7 @@ Name | Type |
 
 • **key**: *string*
 
-*Defined in [assembly/as-wasi.ts:873](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L873)*
+*Defined in [assembly/as-wasi.ts:873](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L873)*
 
 ___
 
@@ -991,7 +907,7 @@ ___
 
 • **value**: *string*
 
-*Defined in [assembly/as-wasi.ts:873](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L873)*
+*Defined in [assembly/as-wasi.ts:873](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L873)*
 
 
 <a name="classesfilestatmd"></a>
@@ -1026,7 +942,7 @@ Portable information about a file
 
 \+ **new FileStat**(`st_buf`: usize): *[FileStat](#classesfilestatmd)*
 
-*Defined in [assembly/as-wasi.ts:75](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L75)*
+*Defined in [assembly/as-wasi.ts:75](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L75)*
 
 **Parameters:**
 
@@ -1042,7 +958,7 @@ Name | Type |
 
 • **access_time**: *f64*
 
-*Defined in [assembly/as-wasi.ts:73](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L73)*
+*Defined in [assembly/as-wasi.ts:73](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L73)*
 
 ___
 
@@ -1050,7 +966,7 @@ ___
 
 • **creation_time**: *f64*
 
-*Defined in [assembly/as-wasi.ts:75](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L75)*
+*Defined in [assembly/as-wasi.ts:75](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L75)*
 
 ___
 
@@ -1058,7 +974,7 @@ ___
 
 • **file_size**: *filesize*
 
-*Defined in [assembly/as-wasi.ts:72](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L72)*
+*Defined in [assembly/as-wasi.ts:72](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L72)*
 
 ___
 
@@ -1066,7 +982,7 @@ ___
 
 • **file_type**: *filetype*
 
-*Defined in [assembly/as-wasi.ts:71](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L71)*
+*Defined in [assembly/as-wasi.ts:71](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L71)*
 
 ___
 
@@ -1074,7 +990,7 @@ ___
 
 • **modification_time**: *f64*
 
-*Defined in [assembly/as-wasi.ts:74](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L74)*
+*Defined in [assembly/as-wasi.ts:74](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L74)*
 
 
 <a name="classesfilesystemmd"></a>
@@ -1112,7 +1028,7 @@ A class to access a filesystem
 
 ▸ **dirfdForPath**(`path`: string): *fd*
 
-*Defined in [assembly/as-wasi.ts:769](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L769)*
+*Defined in [assembly/as-wasi.ts:769](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L769)*
 
 **Parameters:**
 
@@ -1128,7 +1044,7 @@ ___
 
 ▸ **exists**(`path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:533](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L533)*
+*Defined in [assembly/as-wasi.ts:533](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L533)*
 
 Check if a file exists at a given path
 
@@ -1150,7 +1066,7 @@ ___
 
 ▸ **link**(`old_path`: string, `new_path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:556](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L556)*
+*Defined in [assembly/as-wasi.ts:556](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L556)*
 
 Create a hard link
 
@@ -1175,7 +1091,7 @@ ___
 
 ▸ **lstat**(`path`: string): *[FileStat](#classesfilestatmd)*
 
-*Defined in [assembly/as-wasi.ts:672](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L672)*
+*Defined in [assembly/as-wasi.ts:672](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L672)*
 
 Retrieve information about a file or a symbolic link
 
@@ -1197,7 +1113,7 @@ ___
 
 ▸ **mkdir**(`path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:516](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L516)*
+*Defined in [assembly/as-wasi.ts:516](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L516)*
 
 Create a new directory
 
@@ -1219,7 +1135,7 @@ ___
 
 ▸ **open**(`path`: string, `flags`: string): *[Descriptor](#classesdescriptormd) | null*
 
-*Defined in [assembly/as-wasi.ts:449](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L449)*
+*Defined in [assembly/as-wasi.ts:449](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L449)*
 
 Open a path
 
@@ -1244,7 +1160,7 @@ ___
 
 ▸ **readdir**(`path`: string): *Array‹string› | null*
 
-*Defined in [assembly/as-wasi.ts:726](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L726)*
+*Defined in [assembly/as-wasi.ts:726](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L726)*
 
 Get the content of a directory
 
@@ -1264,7 +1180,7 @@ ___
 
 ▸ **rename**(`old_path`: string, `new_path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:698](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L698)*
+*Defined in [assembly/as-wasi.ts:698](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L698)*
 
 Rename a file
 
@@ -1289,7 +1205,7 @@ ___
 
 ▸ **rmdir**(`path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:630](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L630)*
+*Defined in [assembly/as-wasi.ts:630](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L630)*
 
 Remove a directory
 
@@ -1311,7 +1227,7 @@ ___
 
 ▸ **stat**(`path`: string): *[FileStat](#classesfilestatmd)*
 
-*Defined in [assembly/as-wasi.ts:647](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L647)*
+*Defined in [assembly/as-wasi.ts:647](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L647)*
 
 Retrieve information about a file
 
@@ -1333,7 +1249,7 @@ ___
 
 ▸ **symlink**(`old_path`: string, `new_path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:587](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L587)*
+*Defined in [assembly/as-wasi.ts:587](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L587)*
 
 Create a symbolic link
 
@@ -1358,7 +1274,7 @@ ___
 
 ▸ **unlink**(`path`: string): *bool*
 
-*Defined in [assembly/as-wasi.ts:613](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L613)*
+*Defined in [assembly/as-wasi.ts:613](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L613)*
 
 Unlink a file
 
@@ -1397,7 +1313,7 @@ Name | Type |
 
 ▸ **now**(): *f64*
 
-*Defined in [assembly/as-wasi.ts:852](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L852)*
+*Defined in [assembly/as-wasi.ts:852](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L852)*
 
 **Returns:** *f64*
 
@@ -1424,7 +1340,7 @@ Name | Type |
 
 ▸ **exit**(`status`: u32): *void*
 
-*Defined in [assembly/as-wasi.ts:867](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L867)*
+*Defined in [assembly/as-wasi.ts:867](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L867)*
 
 Cleanly terminate the current process
 
@@ -1460,7 +1376,7 @@ Name | Type | Description |
 
 ▸ **randomBytes**(`len`: usize): *Uint8Array*
 
-*Defined in [assembly/as-wasi.ts:831](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L831)*
+*Defined in [assembly/as-wasi.ts:831](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L831)*
 
 Return an array of random bytes
 
@@ -1478,7 +1394,7 @@ ___
 
 ▸ **randomFill**(`buffer`: ArrayBuffer): *void*
 
-*Defined in [assembly/as-wasi.ts:814](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L814)*
+*Defined in [assembly/as-wasi.ts:814](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L814)*
 
 Fill a buffer with random data
 
@@ -1513,7 +1429,7 @@ Name | Type | Description |
 
 ▸ **fromCString**(`cstring`: usize): *string*
 
-*Defined in [assembly/as-wasi.ts:1023](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L1023)*
+*Defined in [assembly/as-wasi.ts:1023](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L1023)*
 
 Returns a native string from a zero-terminated C string
 
@@ -1556,7 +1472,7 @@ native string
 
 ▪ **MILLISECOND**: *i32* = Time.NANOSECOND * 1000000
 
-*Defined in [assembly/as-wasi.ts:978](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L978)*
+*Defined in [assembly/as-wasi.ts:978](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L978)*
 
 ___
 
@@ -1564,7 +1480,7 @@ ___
 
 ▪ **NANOSECOND**: *i32* = 1
 
-*Defined in [assembly/as-wasi.ts:977](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L977)*
+*Defined in [assembly/as-wasi.ts:977](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L977)*
 
 ___
 
@@ -1572,7 +1488,7 @@ ___
 
 ▪ **SECOND**: *i32* = Time.MILLISECOND * 1000
 
-*Defined in [assembly/as-wasi.ts:979](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L979)*
+*Defined in [assembly/as-wasi.ts:979](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L979)*
 
 ### Methods
 
@@ -1580,7 +1496,7 @@ ___
 
 ▸ **sleep**(`nanoseconds`: i32): *void*
 
-*Defined in [assembly/as-wasi.ts:983](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L983)*
+*Defined in [assembly/as-wasi.ts:983](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L983)*
 
 **Parameters:**
 
@@ -1629,7 +1545,7 @@ A WASI error
 
 *Overrides void*
 
-*Defined in [assembly/as-wasi.ts:60](https://github.com/torch2424/as-wasi/blob/c086d5c/assembly/as-wasi.ts#L60)*
+*Defined in [assembly/as-wasi.ts:60](https://github.com/torch2424/as-wasi/blob/4ce0170/assembly/as-wasi.ts#L60)*
 
 **Parameters:**
 
