@@ -9,7 +9,7 @@
     "docs": "npm run docs:clean && npm run docs:typedoc && npm run docs:concat",
     "docs:clean": "rimraf temp-docs",
     "docs:typedoc": "typedoc --plugin typedoc-plugin-markdown --theme markdown --mode file --out temp-docs --tsconfig assembly/tsconfig.json --exclude \"node_modules/**/*\" --readme none assembly",
-    "docs:concat": "concat-md --toc --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
+    "docs:concat": "concat-md --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
   },
   "devDependencies": {
     "assemblyscript": "^0.14",
