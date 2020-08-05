@@ -5,9 +5,18 @@
     "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --use abort=wasi_abort --debug",
     "asbuild:small": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --use abort=wasi_abort -O3z ",
     "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --use abort=wasi_abort -O3",
-    "asbuild": "npm run asbuild:optimized"
+    "asbuild": "npm run asbuild:optimized",
+    "docs": "npm run docs:clean && npm run docs:typedoc && npm run docs:concat",
+    "docs:clean": "rimraf temp-docs",
+    "docs:typedoc": "typedoc --plugin typedoc-plugin-markdown --theme markdown --mode file --out temp-docs --tsconfig assembly/tsconfig.json assembly/as-wasi.ts",
+    "docs:concat": "concat-md --toc --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
   },
   "devDependencies": {
-    "assemblyscript": "^0.14"
+    "assemblyscript": "^0.14",
+    "concat-md": "^0.3.5",
+    "rimraf": "^3.0.2",
+    "typedoc": "^0.17.8",
+    "typedoc-plugin-markdown": "^2.4.0",
+    "typescript": "^3.9.7"
   }
 }
