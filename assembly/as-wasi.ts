@@ -905,6 +905,14 @@ export class Environ {
    *  Return all environment variables
    */
   @inline
+  static get all(): Array<EnvironEntry> {
+    return new Environ().env;
+  }
+
+  /**
+   *  Return all environment variables
+   */
+  @inline
   all(): Array<EnvironEntry> {
     return this.env;
   }
@@ -916,7 +924,7 @@ export class Environ {
   get(key: string): string | null {
     let env = this.env;
     for (let i = 0, j = env.length; i < j; i++) {
-      let pair = env[i];
+      let pair = unchecked(env[i]);
       if (pair.key == key) {
         return pair.value;
       }
@@ -955,6 +963,14 @@ export class CommandLine {
    * Return all the command-line arguments
    */
   @inline
+  static get all(): Array<string> {
+    return new CommandLine().args;
+  }
+
+  /**
+   * Return all the command-line arguments
+   */
+  @inline
   all(): Array<string> {
     return this.args;
   }
@@ -963,11 +979,11 @@ export class CommandLine {
    * Return the i-th command-ine argument
    * @param i index
    */
-  get(i: usize): string | null {
+  get(index: usize): string | null {
     let args = this.args;
     let args_len: usize = args[0].length;
-    if (i < args_len) {
-      return unchecked(args[i as aisize]);
+    if (index < args_len) {
+      return unchecked(args[index as aisize]);
     }
     return null;
   }
