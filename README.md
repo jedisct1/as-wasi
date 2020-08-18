@@ -16,7 +16,7 @@ A high-level AssemblyScript layer for the WebAssembly System Interface (WASI). ð
 
 You can install `as-wasi` in your project by running the following:
 
-`npm install --save as-bind`
+`npm install --save as-wasi`
 
 ## Quick Start
 
