@@ -12,11 +12,11 @@
     "docs:concat": "concat-md --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
   },
   "devDependencies": {
-    "assemblyscript": "^0.14",
+    "assemblyscript": "^0.15",
     "concat-md": "^0.3.5",
     "rimraf": "^3.0.2",
-    "typedoc": "^0.18.0",
-    "typedoc-plugin-markdown": "^2.4.2",
-    "typescript": "^3.9.7"
+    "typedoc": "^0.19.0",
+    "typedoc-plugin-markdown": "^3.0.0",
+    "typescript": "^4.0.0"
   }
 }
