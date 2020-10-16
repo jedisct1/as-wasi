@@ -894,10 +894,9 @@ export class Environ {
     }
     for (let i: usize = 0; i < count; i++) {
       let env_ptr = load<usize>(env_ptrs + i * sizeof<usize>());
-      let env_ptr_split = StringUtils.fromCString(env_ptr).split("=", 2);
-      let key = env_ptr_split[0];
-      let value = env_ptr_split[1];
-      this.env.push(new EnvironEntry(key, value));
+      let env = StringUtils.fromCString(env_ptr);
+      let eq = env.indexOf("=");
+      this.env.push(new EnvironEntry(env.substring(0, eq), env.substring(eq + 1)));
     }
   }
 
