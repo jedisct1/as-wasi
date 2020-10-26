@@ -261,18 +261,18 @@ export class Descriptor {
   dirName(): string {
     let path_max = 4096 as usize;
     // @ts-ignore
-    let path_buf = __alloc(path_max, 0);
+    let path_buf = heap.alloc(path_max);
     while (true) {
       let ret = fd_prestat_dir_name(this.rawfd, path_buf, path_max);
       if (ret === errno.NAMETOOLONG) {
         path_max *= 2;
         // @ts-ignore
-        path_buf = __realloc(path_buf, path_max);
+        path_buf = heap.realloc(path_buf, path_max);
         continue;
       }
       let path = String.UTF8.decodeUnsafe(path_buf, path_max, true);
       // @ts-ignore
-      __free(path_buf);
+      heap.free(path_buf);
       return path;
     }
   }
@@ -731,7 +731,7 @@ export class FileSystem {
     let out = new Array<string>();
     let buf_size = 4096;
     // @ts-ignore
-    let buf = __alloc(buf_size, 0);
+    let buf = heap.alloc(buf_size);
     // @ts-ignore
     let buf_used_p = memory.data(8);
     let buf_used = 0;
@@ -745,7 +745,7 @@ export class FileSystem {
       }
       buf_size <<= 1;
       // @ts-ignore
-      buf = __realloc(buf, buf_size);
+      buf = heap.realloc(buf, buf_size);
     }
     let offset = 0;
     while (offset < buf_used) {
@@ -760,7 +760,7 @@ export class FileSystem {
       offset += name_len;
     }
     // @ts-ignore
-    __free(buf);
+    heap.free(buf);
     fd.close();
 
     return out;
