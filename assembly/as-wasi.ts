@@ -431,6 +431,7 @@ export class Descriptor {
         line.push(c);
       }
     }
+    // @ts-ignore: cast
     return String.UTF8.decodeUnsafe(line.dataStart, line.length);
   }
 
