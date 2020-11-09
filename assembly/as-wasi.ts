@@ -398,6 +398,43 @@ export class Descriptor {
   }
 
   /**
+   * Read a line of text from a file descriptor
+   */
+  readLine(): string | null {
+    let byte = memory.data(1);
+    let iov = memory.data(16);
+    store<u32>(iov, byte, 0);
+    store<u32>(iov, 1, sizeof<usize>());
+    let read_ptr = memory.data(8);
+    let read: usize = 0;
+    let rawfd = this.rawfd;
+    let cr_seen = false;
+    let line = new Array<u8>();
+    while (true) {
+      if (fd_read(rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
+        break;
+      }
+      read = load<usize>(read_ptr);
+      if (read < 0) {
+        return null;
+      } else if (read === 0) {
+        break;
+      }
+      let c = load<u8>(byte);
+      if (c == 10) {
+        break;
+      } else if (c == 13 && !cr_seen) {
+        cr_seen = true;
+      } else if (cr_seen) {
+        return null;
+      } else {
+        line.push(c);
+      }
+    }
+    return String.UTF8.decodeUnsafe(line.dataStart, line.length);
+  }
+
+  /**
    * Read an UTF8 string from a file descriptor, convert it to a native string
    * @param chunk_size chunk size (default: 4096)
    */
@@ -787,6 +824,13 @@ export class Console {
    */
   static readAll(): string | null {
     return Descriptor.Stdin.readString();
+  }
+
+  /**
+   * Read a line of text from the console, convert it from UTF8 to a native string
+   */
+  static readLine(): string | null {
+    return Descriptor.Stdin.readLine();
   }
 
   /**
