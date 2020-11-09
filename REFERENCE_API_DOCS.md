@@ -40,24 +40,24 @@
 
 Ƭ  **aisize**: i32
 
-*Defined in [assembly/as-wasi.ts:55](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L55)*
+*Defined in [assembly/as-wasi.ts:55](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L55)*
 
 ## Functions
 
 ### wasi\_abort
 
-▸ **wasi_abort**(`message`: string, `fileName`: string, `lineNumber`: u32, `columnNumber`: u32): void
+▸ **wasi_abort**(`message?`: string, `fileName?`: string, `lineNumber?`: u32, `columnNumber?`: u32): void
 
-*Defined in [assembly/as-wasi.ts:1050](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L1050)*
+*Defined in [assembly/as-wasi.ts:1094](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1094)*
 
 #### Parameters:
 
-| Name           | Type   | Default value |
-| -------------- | ------ | ------------- |
-| `message`      | string | ""            |
-| `fileName`     | string | ""            |
-| `lineNumber`   | u32    | 0             |
-| `columnNumber` | u32    | 0             |
+Name | Type | Default value |
+------ | ------ | ------ |
+`message` | string | "" |
+`fileName` | string | "" |
+`lineNumber` | u32 | 0 |
+`columnNumber` | u32 | 0 |
 
 **Returns:** void
 
@@ -101,7 +101,7 @@
 
 \+ **new CommandLine**(): [CommandLine](#classescommandlinemd)
 
-*Defined in [assembly/as-wasi.ts:937](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L937)*
+*Defined in [assembly/as-wasi.ts:981](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L981)*
 
 **Returns:** [CommandLine](#classescommandlinemd)
 
@@ -111,7 +111,7 @@
 
 •  **args**: string[]
 
-*Defined in [assembly/as-wasi.ts:937](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L937)*
+*Defined in [assembly/as-wasi.ts:981](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L981)*
 
 ### Accessors
 
@@ -119,7 +119,7 @@
 
 • `Static`get **all**(): Array\<string>
 
-*Defined in [assembly/as-wasi.ts:966](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L966)*
+*Defined in [assembly/as-wasi.ts:1010](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1010)*
 
 Return all the command-line arguments
 
@@ -131,7 +131,7 @@ Return all the command-line arguments
 
 ▸ **all**(): Array\<string>
 
-*Defined in [assembly/as-wasi.ts:974](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L974)*
+*Defined in [assembly/as-wasi.ts:1018](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1018)*
 
 Return all the command-line arguments
 
@@ -143,15 +143,15 @@ ___
 
 ▸ **get**(`index`: usize): string \| null
 
-*Defined in [assembly/as-wasi.ts:982](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L982)*
+*Defined in [assembly/as-wasi.ts:1026](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1026)*
 
 Return the i-th command-ine argument
 
 ##### Parameters:
 
-| Name    | Type  |
-| ------- | ----- |
-| `index` | usize |
+Name | Type |
+------ | ------ |
+`index` | usize |
 
 **Returns:** string \| null
 
@@ -175,24 +175,25 @@ Return the i-th command-ine argument
 * [error](#error)
 * [log](#log)
 * [readAll](#readall)
+* [readLine](#readline)
 * [write](#write)
 
 ### Methods
 
 #### error
 
-▸ `Static`**error**(`s`: string, `newline`: bool): void
+▸ `Static`**error**(`s`: string, `newline?`: bool): void
 
-*Defined in [assembly/as-wasi.ts:804](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L804)*
+*Defined in [assembly/as-wasi.ts:849](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L849)*
 
 Write an error to the console
 
 ##### Parameters:
 
-| Name      | Type   | Default value | Description                                           |
-| --------- | ------ | ------------- | ----------------------------------------------------- |
-| `s`       | string | -             | string                                                |
-| `newline` | bool   | true          | `false` to avoid inserting a newline after the string |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`s` | string | - | string |
+`newline` | bool | true | `false` to avoid inserting a newline after the string  |
 
 **Returns:** void
 
@@ -202,15 +203,15 @@ ___
 
 ▸ `Static`**log**(`s`: string): void
 
-*Defined in [assembly/as-wasi.ts:795](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L795)*
+*Defined in [assembly/as-wasi.ts:840](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L840)*
 
 Alias for `Console.write()`
 
 ##### Parameters:
 
-| Name | Type   |
-| ---- | ------ |
-| `s`  | string |
+Name | Type |
+------ | ------ |
+`s` | string |
 
 **Returns:** void
 
@@ -220,7 +221,7 @@ ___
 
 ▸ `Static`**readAll**(): string \| null
 
-*Defined in [assembly/as-wasi.ts:788](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L788)*
+*Defined in [assembly/as-wasi.ts:826](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L826)*
 
 Read an UTF8 string from the console, convert it to a native string
 
@@ -228,20 +229,32 @@ Read an UTF8 string from the console, convert it to a native string
 
 ___
 
+#### readLine
+
+▸ `Static`**readLine**(): string \| null
+
+*Defined in [assembly/as-wasi.ts:833](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L833)*
+
+Read a line of text from the console, convert it from UTF8 to a native string
+
+**Returns:** string \| null
+
+___
+
 #### write
 
-▸ `Static`**write**(`s`: string, `newline`: bool): void
+▸ `Static`**write**(`s`: string, `newline?`: bool): void
 
-*Defined in [assembly/as-wasi.ts:781](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L781)*
+*Defined in [assembly/as-wasi.ts:819](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L819)*
 
 Write a string to the console
 
 ##### Parameters:
 
-| Name      | Type   | Default value | Description                                           |
-| --------- | ------ | ------------- | ----------------------------------------------------- |
-| `s`       | string | -             | string                                                |
-| `newline` | bool   | true          | `false` to avoid inserting a newline after the string |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`s` | string | - | string |
+`newline` | bool | true | `false` to avoid inserting a newline after the string  |
 
 **Returns:** void
 
@@ -270,7 +283,7 @@ Write a string to the console
 
 ▸ `Static`**now**(): f64
 
-*Defined in [assembly/as-wasi.ts:842](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L842)*
+*Defined in [assembly/as-wasi.ts:887](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L887)*
 
 Return the current timestamp, as a number of milliseconds since the epoch
 
@@ -320,6 +333,7 @@ A descriptor, that doesn't necessarily have to represent a file
 * [futimes](#futimes)
 * [read](#read)
 * [readAll](#readall)
+* [readLine](#readline)
 * [readString](#readstring)
 * [seek](#seek)
 * [setFlags](#setflags)
@@ -336,15 +350,15 @@ A descriptor, that doesn't necessarily have to represent a file
 
 \+ **new Descriptor**(`rawfd`: fd): [Descriptor](#classesdescriptormd)
 
-*Defined in [assembly/as-wasi.ts:109](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L109)*
+*Defined in [assembly/as-wasi.ts:109](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L109)*
 
 Build a new descriptor from a raw WASI file descriptor
 
 ##### Parameters:
 
-| Name    | Type | Description           |
-| ------- | ---- | --------------------- |
-| `rawfd` | fd   | a raw file descriptor |
+Name | Type | Description |
+------ | ------ | ------ |
+`rawfd` | fd | a raw file descriptor  |
 
 **Returns:** [Descriptor](#classesdescriptormd)
 
@@ -354,7 +368,7 @@ Build a new descriptor from a raw WASI file descriptor
 
 • get **rawfd**(): fd
 
-*Defined in [assembly/as-wasi.ts:119](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L119)*
+*Defined in [assembly/as-wasi.ts:119](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L119)*
 
 **Returns:** fd
 
@@ -364,7 +378,7 @@ ___
 
 • `Static`get **Invalid**(): [Descriptor](#classesdescriptormd)
 
-*Defined in [assembly/as-wasi.ts:94](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L94)*
+*Defined in [assembly/as-wasi.ts:94](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L94)*
 
 An invalid file descriptor, that can represent an error
 
@@ -376,7 +390,7 @@ ___
 
 • `Static`get **Stderr**(): [Descriptor](#classesdescriptormd)
 
-*Defined in [assembly/as-wasi.ts:109](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L109)*
+*Defined in [assembly/as-wasi.ts:109](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L109)*
 
 The standard error
 
@@ -388,7 +402,7 @@ ___
 
 • `Static`get **Stdin**(): [Descriptor](#classesdescriptormd)
 
-*Defined in [assembly/as-wasi.ts:99](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L99)*
+*Defined in [assembly/as-wasi.ts:99](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L99)*
 
 The standard input
 
@@ -400,7 +414,7 @@ ___
 
 • `Static`get **Stdout**(): [Descriptor](#classesdescriptormd)
 
-*Defined in [assembly/as-wasi.ts:104](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L104)*
+*Defined in [assembly/as-wasi.ts:104](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L104)*
 
 The standard output
 
@@ -412,7 +426,7 @@ The standard output
 
 ▸ **advise**(`offset`: u64, `len`: u64, `advice`: advice): bool
 
-*Defined in [assembly/as-wasi.ts:130](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L130)*
+*Defined in [assembly/as-wasi.ts:130](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L130)*
 
 Hint at how the data accessible via the descriptor will be used
 
@@ -424,11 +438,11 @@ Hint at how the data accessible via the descriptor will be used
 
 ##### Parameters:
 
-| Name     | Type   |
-| -------- | ------ |
-| `offset` | u64    |
-| `len`    | u64    |
-| `advice` | advice |
+Name | Type |
+------ | ------ |
+`offset` | u64 |
+`len` | u64 |
+`advice` | advice |
 
 **Returns:** bool
 
@@ -440,16 +454,16 @@ ___
 
 ▸ **allocate**(`offset`: u64, `len`: u64): bool
 
-*Defined in [assembly/as-wasi.ts:140](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L140)*
+*Defined in [assembly/as-wasi.ts:140](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L140)*
 
 Preallocate data
 
 ##### Parameters:
 
-| Name     | Type | Description                                   |
-| -------- | ---- | --------------------------------------------- |
-| `offset` | u64  | where to start preallocating data in the file |
-| `len`    | u64  | bytes to preallocate                          |
+Name | Type | Description |
+------ | ------ | ------ |
+`offset` | u64 | where to start preallocating data in the file |
+`len` | u64 | bytes to preallocate |
 
 **Returns:** bool
 
@@ -461,7 +475,7 @@ ___
 
 ▸ **close**(): void
 
-*Defined in [assembly/as-wasi.ts:283](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L283)*
+*Defined in [assembly/as-wasi.ts:283](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L283)*
 
 Close a file descriptor
 
@@ -473,7 +487,7 @@ ___
 
 ▸ **dirName**(): string
 
-*Defined in [assembly/as-wasi.ts:261](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L261)*
+*Defined in [assembly/as-wasi.ts:261](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L261)*
 
 Return the directory associated to that descriptor
 
@@ -485,7 +499,7 @@ ___
 
 ▸ **fatime**(`ts`: f64): bool
 
-*Defined in [assembly/as-wasi.ts:207](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L207)*
+*Defined in [assembly/as-wasi.ts:207](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L207)*
 
 Update the access time
 
@@ -493,9 +507,9 @@ Update the access time
 
 ##### Parameters:
 
-| Name | Type |
-| ---- | ---- |
-| `ts` | f64  |
+Name | Type |
+------ | ------ |
+`ts` | f64 |
 
 **Returns:** bool
 
@@ -507,7 +521,7 @@ ___
 
 ▸ **fdatasync**(): bool
 
-*Defined in [assembly/as-wasi.ts:148](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L148)*
+*Defined in [assembly/as-wasi.ts:148](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L148)*
 
 Wait for the data to be written
 
@@ -521,7 +535,7 @@ ___
 
 ▸ **fileType**(): filetype
 
-*Defined in [assembly/as-wasi.ts:163](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L163)*
+*Defined in [assembly/as-wasi.ts:163](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L163)*
 
 Return the file type
 
@@ -533,7 +547,7 @@ ___
 
 ▸ **fmtime**(`ts`: f64): bool
 
-*Defined in [assembly/as-wasi.ts:219](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L219)*
+*Defined in [assembly/as-wasi.ts:219](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L219)*
 
 Update the modification time
 
@@ -541,9 +555,9 @@ Update the modification time
 
 ##### Parameters:
 
-| Name | Type |
-| ---- | ---- |
-| `ts` | f64  |
+Name | Type |
+------ | ------ |
+`ts` | f64 |
 
 **Returns:** bool
 
@@ -555,7 +569,7 @@ ___
 
 ▸ **fsync**(): bool
 
-*Defined in [assembly/as-wasi.ts:156](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L156)*
+*Defined in [assembly/as-wasi.ts:156](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L156)*
 
 Wait for the data and metadata to be written
 
@@ -567,17 +581,17 @@ ___
 
 #### ftruncate
 
-▸ **ftruncate**(`size`: u64): bool
+▸ **ftruncate**(`size?`: u64): bool
 
-*Defined in [assembly/as-wasi.ts:198](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L198)*
+*Defined in [assembly/as-wasi.ts:198](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L198)*
 
 Change the size of a file
 
 ##### Parameters:
 
-| Name   | Type | Default value | Description |
-| ------ | ---- | ------------- | ----------- |
-| `size` | u64  | 0             | new size    |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`size` | u64 | 0 | new size |
 
 **Returns:** bool
 
@@ -589,7 +603,7 @@ ___
 
 ▸ **futimes**(`atime`: f64, `mtime`: f64): bool
 
-*Defined in [assembly/as-wasi.ts:232](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L232)*
+*Defined in [assembly/as-wasi.ts:232](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L232)*
 
 Update both the access and the modification times
 
@@ -599,10 +613,10 @@ Update both the access and the modification times
 
 ##### Parameters:
 
-| Name    | Type |
-| ------- | ---- |
-| `atime` | f64  |
-| `mtime` | f64  |
+Name | Type |
+------ | ------ |
+`atime` | f64 |
+`mtime` | f64 |
 
 **Returns:** bool
 
@@ -612,18 +626,18 @@ ___
 
 #### read
 
-▸ **read**(`data`: u8[], `chunk_size`: usize): u8[] \| null
+▸ **read**(`data?`: u8[], `chunk_size?`: usize): u8[] \| null
 
-*Defined in [assembly/as-wasi.ts:348](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L348)*
+*Defined in [assembly/as-wasi.ts:348](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L348)*
 
 Read data from a file descriptor
 
 ##### Parameters:
 
-| Name         | Type  | Default value | Description                    |
-| ------------ | ----- | ------------- | ------------------------------ |
-| `data`       | u8[]  | []            | existing array to push data to |
-| `chunk_size` | usize | 4096          | chunk size (default: 4096)     |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`data` | u8[] | [] | existing array to push data to |
+`chunk_size` | usize | 4096 | chunk size (default: 4096)  |
 
 **Returns:** u8[] \| null
 
@@ -631,36 +645,48 @@ ___
 
 #### readAll
 
-▸ **readAll**(`data`: u8[], `chunk_size`: usize): u8[] \| null
+▸ **readAll**(`data?`: u8[], `chunk_size?`: usize): u8[] \| null
 
-*Defined in [assembly/as-wasi.ts:373](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L373)*
+*Defined in [assembly/as-wasi.ts:373](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L373)*
 
 Read from a file descriptor until the end of the stream
 
 ##### Parameters:
 
-| Name         | Type  | Default value | Description                    |
-| ------------ | ----- | ------------- | ------------------------------ |
-| `data`       | u8[]  | []            | existing array to push data to |
-| `chunk_size` | usize | 4096          | chunk size (default: 4096)     |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`data` | u8[] | [] | existing array to push data to |
+`chunk_size` | usize | 4096 | chunk size (default: 4096)  |
 
 **Returns:** u8[] \| null
 
 ___
 
+#### readLine
+
+▸ **readLine**(): string \| null
+
+*Defined in [assembly/as-wasi.ts:403](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L403)*
+
+Read a line of text from a file descriptor
+
+**Returns:** string \| null
+
+___
+
 #### readString
 
-▸ **readString**(`chunk_size`: usize): string \| null
+▸ **readString**(`chunk_size?`: usize): string \| null
 
-*Defined in [assembly/as-wasi.ts:404](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L404)*
+*Defined in [assembly/as-wasi.ts:442](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L442)*
 
 Read an UTF8 string from a file descriptor, convert it to a native string
 
 ##### Parameters:
 
-| Name         | Type  | Default value | Description                |
-| ------------ | ----- | ------------- | -------------------------- |
-| `chunk_size` | usize | 4096          | chunk size (default: 4096) |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`chunk_size` | usize | 4096 | chunk size (default: 4096)  |
 
 **Returns:** string \| null
 
@@ -670,7 +696,7 @@ ___
 
 ▸ **seek**(`off`: u64, `w`: whence): bool
 
-*Defined in [assembly/as-wasi.ts:418](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L418)*
+*Defined in [assembly/as-wasi.ts:456](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L456)*
 
 Seek into a stream
 
@@ -680,10 +706,10 @@ Seek into a stream
 
 ##### Parameters:
 
-| Name  | Type   |
-| ----- | ------ |
-| `off` | u64    |
-| `w`   | whence |
+Name | Type |
+------ | ------ |
+`off` | u64 |
+`w` | whence |
 
 **Returns:** bool
 
@@ -693,7 +719,7 @@ ___
 
 ▸ **setFlags**(`flags`: fdflags): bool
 
-*Defined in [assembly/as-wasi.ts:177](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L177)*
+*Defined in [assembly/as-wasi.ts:177](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L177)*
 
 Set WASI flags for that descriptor
 
@@ -701,9 +727,9 @@ Set WASI flags for that descriptor
 
 ##### Parameters:
 
-| Name    | Type    |
-| ------- | ------- |
-| `flags` | fdflags |
+Name | Type |
+------ | ------ |
+`flags` | fdflags |
 
 **Returns:** bool
 
@@ -715,7 +741,7 @@ ___
 
 ▸ **stat**(): [FileStat](#classesfilestatmd)
 
-*Defined in [assembly/as-wasi.ts:185](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L185)*
+*Defined in [assembly/as-wasi.ts:185](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L185)*
 
 Retrieve information about a descriptor
 
@@ -729,7 +755,7 @@ ___
 
 ▸ **tell**(): u64
 
-*Defined in [assembly/as-wasi.ts:429](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L429)*
+*Defined in [assembly/as-wasi.ts:467](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L467)*
 
 Return the current offset in the stream
 
@@ -743,7 +769,7 @@ ___
 
 ▸ **touch**(): bool
 
-*Defined in [assembly/as-wasi.ts:247](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L247)*
+*Defined in [assembly/as-wasi.ts:247](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L247)*
 
 Update the timestamp of the object represented by the descriptor
 
@@ -757,15 +783,15 @@ ___
 
 ▸ **write**(`data`: u8[]): void
 
-*Defined in [assembly/as-wasi.ts:291](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L291)*
+*Defined in [assembly/as-wasi.ts:291](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L291)*
 
 Write data to a file descriptor
 
 ##### Parameters:
 
-| Name   | Type | Description |
-| ------ | ---- | ----------- |
-| `data` | u8[] | data        |
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | u8[] | data  |
 
 **Returns:** void
 
@@ -773,18 +799,18 @@ ___
 
 #### writeString
 
-▸ **writeString**(`s`: string, `newline`: bool): void
+▸ **writeString**(`s`: string, `newline?`: bool): void
 
-*Defined in [assembly/as-wasi.ts:309](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L309)*
+*Defined in [assembly/as-wasi.ts:309](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L309)*
 
 Write a string to a file descriptor, after encoding it to UTF8
 
 ##### Parameters:
 
-| Name      | Type   | Default value | Description                              |
-| --------- | ------ | ------------- | ---------------------------------------- |
-| `s`       | string | -             | string                                   |
-| `newline` | bool   | false         | `true` to add a newline after the string |
+Name | Type | Default value | Description |
+------ | ------ | ------ | ------ |
+`s` | string | - | string |
+`newline` | bool | false | `true` to add a newline after the string  |
 
 **Returns:** void
 
@@ -794,15 +820,15 @@ ___
 
 ▸ **writeStringLn**(`s`: string): void
 
-*Defined in [assembly/as-wasi.ts:328](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L328)*
+*Defined in [assembly/as-wasi.ts:328](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L328)*
 
 Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
 ##### Parameters:
 
-| Name | Type   | Description |
-| ---- | ------ | ----------- |
-| `s`  | string | string      |
+Name | Type | Description |
+------ | ------ | ------ |
+`s` | string | string  |
 
 **Returns:** void
 
@@ -844,7 +870,7 @@ Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
 \+ **new Environ**(): [Environ](#classesenvironmd)
 
-*Defined in [assembly/as-wasi.ts:877](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L877)*
+*Defined in [assembly/as-wasi.ts:922](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L922)*
 
 **Returns:** [Environ](#classesenvironmd)
 
@@ -854,7 +880,7 @@ Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
 •  **env**: Array\<[EnvironEntry](#classesenvironentrymd)>
 
-*Defined in [assembly/as-wasi.ts:877](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L877)*
+*Defined in [assembly/as-wasi.ts:922](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L922)*
 
 ### Accessors
 
@@ -862,7 +888,7 @@ Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
 • `Static`get **all**(): Array\<[EnvironEntry](#classesenvironentrymd)>
 
-*Defined in [assembly/as-wasi.ts:908](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L908)*
+*Defined in [assembly/as-wasi.ts:952](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L952)*
 
  Return all environment variables
 
@@ -874,7 +900,7 @@ Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
 ▸ **all**(): Array\<[EnvironEntry](#classesenvironentrymd)>
 
-*Defined in [assembly/as-wasi.ts:916](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L916)*
+*Defined in [assembly/as-wasi.ts:960](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L960)*
 
  Return all environment variables
 
@@ -886,15 +912,15 @@ ___
 
 ▸ **get**(`key`: string): string \| null
 
-*Defined in [assembly/as-wasi.ts:924](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L924)*
+*Defined in [assembly/as-wasi.ts:968](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L968)*
 
 Return the value for an environment variable
 
 ##### Parameters:
 
-| Name  | Type   | Description               |
-| ----- | ------ | ------------------------- |
-| `key` | string | environment variable name |
+Name | Type | Description |
+------ | ------ | ------ |
+`key` | string | environment variable name  |
 
 **Returns:** string \| null
 
@@ -928,14 +954,14 @@ Return the value for an environment variable
 
 \+ **new EnvironEntry**(`key`: string, `value`: string): [EnvironEntry](#classesenvironentrymd)
 
-*Defined in [assembly/as-wasi.ts:872](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L872)*
+*Defined in [assembly/as-wasi.ts:917](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L917)*
 
 ##### Parameters:
 
-| Name    | Type   |
-| ------- | ------ |
-| `key`   | string |
-| `value` | string |
+Name | Type |
+------ | ------ |
+`key` | string |
+`value` | string |
 
 **Returns:** [EnvironEntry](#classesenvironentrymd)
 
@@ -945,7 +971,7 @@ Return the value for an environment variable
 
 • `Readonly` **key**: string
 
-*Defined in [assembly/as-wasi.ts:873](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L873)*
+*Defined in [assembly/as-wasi.ts:918](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L918)*
 
 ___
 
@@ -953,7 +979,7 @@ ___
 
 • `Readonly` **value**: string
 
-*Defined in [assembly/as-wasi.ts:873](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L873)*
+*Defined in [assembly/as-wasi.ts:918](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L918)*
 
 
 <a name="classesfilestatmd"></a>
@@ -990,13 +1016,13 @@ Portable information about a file
 
 \+ **new FileStat**(`st_buf`: usize): [FileStat](#classesfilestatmd)
 
-*Defined in [assembly/as-wasi.ts:75](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L75)*
+*Defined in [assembly/as-wasi.ts:75](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L75)*
 
 ##### Parameters:
 
-| Name     | Type  |
-| -------- | ----- |
-| `st_buf` | usize |
+Name | Type |
+------ | ------ |
+`st_buf` | usize |
 
 **Returns:** [FileStat](#classesfilestatmd)
 
@@ -1006,7 +1032,7 @@ Portable information about a file
 
 •  **access\_time**: f64
 
-*Defined in [assembly/as-wasi.ts:73](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L73)*
+*Defined in [assembly/as-wasi.ts:73](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L73)*
 
 ___
 
@@ -1014,7 +1040,7 @@ ___
 
 •  **creation\_time**: f64
 
-*Defined in [assembly/as-wasi.ts:75](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L75)*
+*Defined in [assembly/as-wasi.ts:75](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L75)*
 
 ___
 
@@ -1022,7 +1048,7 @@ ___
 
 •  **file\_size**: filesize
 
-*Defined in [assembly/as-wasi.ts:72](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L72)*
+*Defined in [assembly/as-wasi.ts:72](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L72)*
 
 ___
 
@@ -1030,7 +1056,7 @@ ___
 
 •  **file\_type**: filetype
 
-*Defined in [assembly/as-wasi.ts:71](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L71)*
+*Defined in [assembly/as-wasi.ts:71](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L71)*
 
 ___
 
@@ -1038,7 +1064,7 @@ ___
 
 •  **modification\_time**: f64
 
-*Defined in [assembly/as-wasi.ts:74](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L74)*
+*Defined in [assembly/as-wasi.ts:74](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L74)*
 
 
 <a name="classesfilesystemmd"></a>
@@ -1078,13 +1104,13 @@ A class to access a filesystem
 
 ▸ `Static` `Protected`**dirfdForPath**(`path`: string): fd
 
-*Defined in [assembly/as-wasi.ts:769](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L769)*
+*Defined in [assembly/as-wasi.ts:807](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L807)*
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** fd
 
@@ -1094,7 +1120,7 @@ ___
 
 ▸ `Static`**exists**(`path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:533](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L533)*
+*Defined in [assembly/as-wasi.ts:571](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L571)*
 
 Check if a file exists at a given path
 
@@ -1102,9 +1128,9 @@ Check if a file exists at a given path
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** bool
 
@@ -1116,7 +1142,7 @@ ___
 
 ▸ `Static`**link**(`old_path`: string, `new_path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:556](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L556)*
+*Defined in [assembly/as-wasi.ts:594](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L594)*
 
 Create a hard link
 
@@ -1126,10 +1152,10 @@ Create a hard link
 
 ##### Parameters:
 
-| Name       | Type   |
-| ---------- | ------ |
-| `old_path` | string |
-| `new_path` | string |
+Name | Type |
+------ | ------ |
+`old_path` | string |
+`new_path` | string |
 
 **Returns:** bool
 
@@ -1141,7 +1167,7 @@ ___
 
 ▸ `Static`**lstat**(`path`: string): [FileStat](#classesfilestatmd)
 
-*Defined in [assembly/as-wasi.ts:672](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L672)*
+*Defined in [assembly/as-wasi.ts:710](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L710)*
 
 Retrieve information about a file or a symbolic link
 
@@ -1149,9 +1175,9 @@ Retrieve information about a file or a symbolic link
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** [FileStat](#classesfilestatmd)
 
@@ -1163,7 +1189,7 @@ ___
 
 ▸ `Static`**mkdir**(`path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:516](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L516)*
+*Defined in [assembly/as-wasi.ts:554](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L554)*
 
 Create a new directory
 
@@ -1171,9 +1197,9 @@ Create a new directory
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** bool
 
@@ -1183,9 +1209,9 @@ ___
 
 #### open
 
-▸ `Static`**open**(`path`: string, `flags`: string): [Descriptor](#classesdescriptormd) \| null
+▸ `Static`**open**(`path`: string, `flags?`: string): [Descriptor](#classesdescriptormd) \| null
 
-*Defined in [assembly/as-wasi.ts:449](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L449)*
+*Defined in [assembly/as-wasi.ts:487](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L487)*
 
 Open a path
 
@@ -1195,10 +1221,10 @@ Open a path
 
 ##### Parameters:
 
-| Name    | Type   | Default value |
-| ------- | ------ | ------------- |
-| `path`  | string | -             |
-| `flags` | string | "r"           |
+Name | Type | Default value |
+------ | ------ | ------ |
+`path` | string | - |
+`flags` | string | "r" |
 
 **Returns:** [Descriptor](#classesdescriptormd) \| null
 
@@ -1210,15 +1236,15 @@ ___
 
 ▸ `Static`**readdir**(`path`: string): Array\<string> \| null
 
-*Defined in [assembly/as-wasi.ts:726](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L726)*
+*Defined in [assembly/as-wasi.ts:764](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L764)*
 
 Get the content of a directory
 
 ##### Parameters:
 
-| Name   | Type   | Description        |
-| ------ | ------ | ------------------ |
-| `path` | string | the directory path |
+Name | Type | Description |
+------ | ------ | ------ |
+`path` | string | the directory path |
 
 **Returns:** Array\<string> \| null
 
@@ -1230,7 +1256,7 @@ ___
 
 ▸ `Static`**rename**(`old_path`: string, `new_path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:698](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L698)*
+*Defined in [assembly/as-wasi.ts:736](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L736)*
 
 Rename a file
 
@@ -1240,10 +1266,10 @@ Rename a file
 
 ##### Parameters:
 
-| Name       | Type   |
-| ---------- | ------ |
-| `old_path` | string |
-| `new_path` | string |
+Name | Type |
+------ | ------ |
+`old_path` | string |
+`new_path` | string |
 
 **Returns:** bool
 
@@ -1255,7 +1281,7 @@ ___
 
 ▸ `Static`**rmdir**(`path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:630](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L630)*
+*Defined in [assembly/as-wasi.ts:668](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L668)*
 
 Remove a directory
 
@@ -1263,9 +1289,9 @@ Remove a directory
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** bool
 
@@ -1277,7 +1303,7 @@ ___
 
 ▸ `Static`**stat**(`path`: string): [FileStat](#classesfilestatmd)
 
-*Defined in [assembly/as-wasi.ts:647](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L647)*
+*Defined in [assembly/as-wasi.ts:685](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L685)*
 
 Retrieve information about a file
 
@@ -1285,9 +1311,9 @@ Retrieve information about a file
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** [FileStat](#classesfilestatmd)
 
@@ -1299,7 +1325,7 @@ ___
 
 ▸ `Static`**symlink**(`old_path`: string, `new_path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:587](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L587)*
+*Defined in [assembly/as-wasi.ts:625](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L625)*
 
 Create a symbolic link
 
@@ -1309,10 +1335,10 @@ Create a symbolic link
 
 ##### Parameters:
 
-| Name       | Type   |
-| ---------- | ------ |
-| `old_path` | string |
-| `new_path` | string |
+Name | Type |
+------ | ------ |
+`old_path` | string |
+`new_path` | string |
 
 **Returns:** bool
 
@@ -1324,7 +1350,7 @@ ___
 
 ▸ `Static`**unlink**(`path`: string): bool
 
-*Defined in [assembly/as-wasi.ts:613](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L613)*
+*Defined in [assembly/as-wasi.ts:651](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L651)*
 
 Unlink a file
 
@@ -1332,9 +1358,9 @@ Unlink a file
 
 ##### Parameters:
 
-| Name   | Type   |
-| ------ | ------ |
-| `path` | string |
+Name | Type |
+------ | ------ |
+`path` | string |
 
 **Returns:** bool
 
@@ -1365,7 +1391,7 @@ Unlink a file
 
 ▸ `Static`**now**(): f64
 
-*Defined in [assembly/as-wasi.ts:852](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L852)*
+*Defined in [assembly/as-wasi.ts:897](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L897)*
 
 **Returns:** f64
 
@@ -1394,15 +1420,15 @@ Unlink a file
 
 ▸ `Static`**exit**(`status`: u32): void
 
-*Defined in [assembly/as-wasi.ts:867](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L867)*
+*Defined in [assembly/as-wasi.ts:912](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L912)*
 
 Cleanly terminate the current process
 
 ##### Parameters:
 
-| Name     | Type | Description |
-| -------- | ---- | ----------- |
-| `status` | u32  | exit code   |
+Name | Type | Description |
+------ | ------ | ------ |
+`status` | u32 | exit code  |
 
 **Returns:** void
 
@@ -1432,15 +1458,15 @@ Cleanly terminate the current process
 
 ▸ `Static`**randomBytes**(`len`: usize): Uint8Array
 
-*Defined in [assembly/as-wasi.ts:831](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L831)*
+*Defined in [assembly/as-wasi.ts:876](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L876)*
 
 Return an array of random bytes
 
 ##### Parameters:
 
-| Name  | Type  | Description |
-| ----- | ----- | ----------- |
-| `len` | usize | length      |
+Name | Type | Description |
+------ | ------ | ------ |
+`len` | usize | length  |
 
 **Returns:** Uint8Array
 
@@ -1450,15 +1476,15 @@ ___
 
 ▸ `Static`**randomFill**(`buffer`: ArrayBuffer): void
 
-*Defined in [assembly/as-wasi.ts:814](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L814)*
+*Defined in [assembly/as-wasi.ts:859](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L859)*
 
 Fill a buffer with random data
 
 ##### Parameters:
 
-| Name     | Type        | Description     |
-| -------- | ----------- | --------------- |
-| `buffer` | ArrayBuffer | An array buffer |
+Name | Type | Description |
+------ | ------ | ------ |
+`buffer` | ArrayBuffer | An array buffer  |
 
 **Returns:** void
 
@@ -1487,15 +1513,15 @@ Fill a buffer with random data
 
 ▸ `Static`**fromCString**(`cstring`: usize): string
 
-*Defined in [assembly/as-wasi.ts:1039](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L1039)*
+*Defined in [assembly/as-wasi.ts:1083](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1083)*
 
 Returns a native string from a zero-terminated C string
 
 ##### Parameters:
 
-| Name      | Type  |
-| --------- | ----- |
-| `cstring` | usize |
+Name | Type |
+------ | ------ |
+`cstring` | usize |
 
 **Returns:** string
 
@@ -1532,7 +1558,7 @@ native string
 
 ▪ `Static` **MILLISECOND**: i32 = Time.NANOSECOND * 1000000
 
-*Defined in [assembly/as-wasi.ts:994](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L994)*
+*Defined in [assembly/as-wasi.ts:1038](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1038)*
 
 ___
 
@@ -1540,7 +1566,7 @@ ___
 
 ▪ `Static` **NANOSECOND**: i32 = 1
 
-*Defined in [assembly/as-wasi.ts:993](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L993)*
+*Defined in [assembly/as-wasi.ts:1037](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1037)*
 
 ___
 
@@ -1548,7 +1574,7 @@ ___
 
 ▪ `Static` **SECOND**: i32 = Time.MILLISECOND * 1000
 
-*Defined in [assembly/as-wasi.ts:995](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L995)*
+*Defined in [assembly/as-wasi.ts:1039](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1039)*
 
 ### Methods
 
@@ -1556,13 +1582,13 @@ ___
 
 ▸ `Static`**sleep**(`nanoseconds`: i32): void
 
-*Defined in [assembly/as-wasi.ts:999](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L999)*
+*Defined in [assembly/as-wasi.ts:1043](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L1043)*
 
 ##### Parameters:
 
-| Name          | Type |
-| ------------- | ---- |
-| `nanoseconds` | i32  |
+Name | Type |
+------ | ------ |
+`nanoseconds` | i32 |
 
 **Returns:** void
 
@@ -1603,17 +1629,17 @@ A WASI error
 
 #### constructor
 
-\+ **new WASIError**(`message`: string): [WASIError](#classeswasierrormd)
+\+ **new WASIError**(`message?`: string): [WASIError](#classeswasierrormd)
 
 *Overrides void*
 
-*Defined in [assembly/as-wasi.ts:60](https://github.com/jedisct1/as-wasi/blob/5c047fd/assembly/as-wasi.ts#L60)*
+*Defined in [assembly/as-wasi.ts:60](https://github.com/jedisct1/as-wasi/blob/fb7043b/assembly/as-wasi.ts#L60)*
 
 ##### Parameters:
 
-| Name      | Type   | Default value |
-| --------- | ------ | ------------- |
-| `message` | string | ""            |
+Name | Type | Default value |
+------ | ------ | ------ |
+`message` | string | "" |
 
 **Returns:** [WASIError](#classeswasierrormd)
 
@@ -1625,7 +1651,7 @@ A WASI error
 
 *Inherited from [WASIError](#classeswasierrormd).[message](#message)*
 
-*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1630*
+*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1718*
 
 Message provided on construction.
 
@@ -1637,7 +1663,7 @@ ___
 
 *Inherited from [WASIError](#classeswasierrormd).[name](#name)*
 
-*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1627*
+*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1715*
 
 Error name.
 
@@ -1649,7 +1675,7 @@ ___
 
 *Inherited from [WASIError](#classeswasierrormd).[stack](#stack)*
 
-*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1633*
+*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1721*
 
 Stack trace.
 
@@ -1661,7 +1687,7 @@ Stack trace.
 
 *Inherited from [WASIError](#classeswasierrormd).[toString](#tostring)*
 
-*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1639*
+*Defined in node_modules/assemblyscript/std/assembly/index.d.ts:1727*
 
 Method returns a string representing the specified Error class.
 
