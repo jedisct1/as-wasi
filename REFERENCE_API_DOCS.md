@@ -52,12 +52,12 @@
 
 #### Parameters:
 
-Name | Type | Default value |
------- | ------ | ------ |
-`message` | string | "" |
-`fileName` | string | "" |
-`lineNumber` | u32 | 0 |
-`columnNumber` | u32 | 0 |
+| Name           | Type   | Default value |
+| -------------- | ------ | ------------- |
+| `message`      | string | ""            |
+| `fileName`     | string | ""            |
+| `lineNumber`   | u32    | 0             |
+| `columnNumber` | u32    | 0             |
 
 **Returns:** void
 
@@ -149,9 +149,9 @@ Return the i-th command-ine argument
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`index` | usize |
+| Name    | Type  |
+| ------- | ----- |
+| `index` | usize |
 
 **Returns:** string \| null
 
@@ -189,10 +189,10 @@ Write an error to the console
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`s` | string | - | string |
-`newline` | bool | true | `false` to avoid inserting a newline after the string  |
+| Name      | Type   | Default value | Description                                           |
+| --------- | ------ | ------------- | ----------------------------------------------------- |
+| `s`       | string | -             | string                                                |
+| `newline` | bool   | true          | `false` to avoid inserting a newline after the string |
 
 **Returns:** void
 
@@ -208,9 +208,9 @@ Alias for `Console.write()`
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`s` | string |
+| Name | Type   |
+| ---- | ------ |
+| `s`  | string |
 
 **Returns:** void
 
@@ -238,10 +238,10 @@ Write a string to the console
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`s` | string | - | string |
-`newline` | bool | true | `false` to avoid inserting a newline after the string  |
+| Name      | Type   | Default value | Description                                           |
+| --------- | ------ | ------------- | ----------------------------------------------------- |
+| `s`       | string | -             | string                                                |
+| `newline` | bool   | true          | `false` to avoid inserting a newline after the string |
 
 **Returns:** void
 
@@ -342,9 +342,9 @@ Build a new descriptor from a raw WASI file descriptor
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`rawfd` | fd | a raw file descriptor  |
+| Name    | Type | Description           |
+| ------- | ---- | --------------------- |
+| `rawfd` | fd   | a raw file descriptor |
 
 **Returns:** [Descriptor](#classesdescriptormd)
 
@@ -424,11 +424,11 @@ Hint at how the data accessible via the descriptor will be used
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`offset` | u64 |
-`len` | u64 |
-`advice` | advice |
+| Name     | Type   |
+| -------- | ------ |
+| `offset` | u64    |
+| `len`    | u64    |
+| `advice` | advice |
 
 **Returns:** bool
 
@@ -446,10 +446,10 @@ Preallocate data
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`offset` | u64 | where to start preallocating data in the file |
-`len` | u64 | bytes to preallocate |
+| Name     | Type | Description                                   |
+| -------- | ---- | --------------------------------------------- |
+| `offset` | u64  | where to start preallocating data in the file |
+| `len`    | u64  | bytes to preallocate                          |
 
 **Returns:** bool
 
@@ -493,9 +493,9 @@ Update the access time
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`ts` | f64 |
+| Name | Type |
+| ---- | ---- |
+| `ts` | f64  |
 
 **Returns:** bool
 
@@ -541,9 +541,9 @@ Update the modification time
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`ts` | f64 |
+| Name | Type |
+| ---- | ---- |
+| `ts` | f64  |
 
 **Returns:** bool
 
@@ -575,9 +575,9 @@ Change the size of a file
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`size` | u64 | 0 | new size |
+| Name   | Type | Default value | Description |
+| ------ | ---- | ------------- | ----------- |
+| `size` | u64  | 0             | new size    |
 
 **Returns:** bool
 
@@ -599,10 +599,10 @@ Update both the access and the modification times
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`atime` | f64 |
-`mtime` | f64 |
+| Name    | Type |
+| ------- | ---- |
+| `atime` | f64  |
+| `mtime` | f64  |
 
 **Returns:** bool
 
@@ -620,10 +620,10 @@ Read data from a file descriptor
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`data` | u8[] | [] | existing array to push data to |
-`chunk_size` | usize | 4096 | chunk size (default: 4096)  |
+| Name         | Type  | Default value | Description                    |
+| ------------ | ----- | ------------- | ------------------------------ |
+| `data`       | u8[]  | []            | existing array to push data to |
+| `chunk_size` | usize | 4096          | chunk size (default: 4096)     |
 
 **Returns:** u8[] \| null
 
@@ -639,10 +639,10 @@ Read from a file descriptor until the end of the stream
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`data` | u8[] | [] | existing array to push data to |
-`chunk_size` | usize | 4096 | chunk size (default: 4096)  |
+| Name         | Type  | Default value | Description                    |
+| ------------ | ----- | ------------- | ------------------------------ |
+| `data`       | u8[]  | []            | existing array to push data to |
+| `chunk_size` | usize | 4096          | chunk size (default: 4096)     |
 
 **Returns:** u8[] \| null
 
@@ -658,9 +658,9 @@ Read an UTF8 string from a file descriptor, convert it to a native string
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`chunk_size` | usize | 4096 | chunk size (default: 4096)  |
+| Name         | Type  | Default value | Description                |
+| ------------ | ----- | ------------- | -------------------------- |
+| `chunk_size` | usize | 4096          | chunk size (default: 4096) |
 
 **Returns:** string \| null
 
@@ -680,10 +680,10 @@ Seek into a stream
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`off` | u64 |
-`w` | whence |
+| Name  | Type   |
+| ----- | ------ |
+| `off` | u64    |
+| `w`   | whence |
 
 **Returns:** bool
 
@@ -701,9 +701,9 @@ Set WASI flags for that descriptor
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`flags` | fdflags |
+| Name    | Type    |
+| ------- | ------- |
+| `flags` | fdflags |
 
 **Returns:** bool
 
@@ -763,9 +763,9 @@ Write data to a file descriptor
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`data` | u8[] | data  |
+| Name   | Type | Description |
+| ------ | ---- | ----------- |
+| `data` | u8[] | data        |
 
 **Returns:** void
 
@@ -781,10 +781,10 @@ Write a string to a file descriptor, after encoding it to UTF8
 
 ##### Parameters:
 
-Name | Type | Default value | Description |
------- | ------ | ------ | ------ |
-`s` | string | - | string |
-`newline` | bool | false | `true` to add a newline after the string  |
+| Name      | Type   | Default value | Description                              |
+| --------- | ------ | ------------- | ---------------------------------------- |
+| `s`       | string | -             | string                                   |
+| `newline` | bool   | false         | `true` to add a newline after the string |
 
 **Returns:** void
 
@@ -800,9 +800,9 @@ Write a string to a file descriptor, after encoding it to UTF8, with a newline
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`s` | string | string  |
+| Name | Type   | Description |
+| ---- | ------ | ----------- |
+| `s`  | string | string      |
 
 **Returns:** void
 
@@ -892,9 +892,9 @@ Return the value for an environment variable
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`key` | string | environment variable name  |
+| Name  | Type   | Description               |
+| ----- | ------ | ------------------------- |
+| `key` | string | environment variable name |
 
 **Returns:** string \| null
 
@@ -932,10 +932,10 @@ Name | Type | Description |
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`key` | string |
-`value` | string |
+| Name    | Type   |
+| ------- | ------ |
+| `key`   | string |
+| `value` | string |
 
 **Returns:** [EnvironEntry](#classesenvironentrymd)
 
@@ -994,9 +994,9 @@ Portable information about a file
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`st_buf` | usize |
+| Name     | Type  |
+| -------- | ----- |
+| `st_buf` | usize |
 
 **Returns:** [FileStat](#classesfilestatmd)
 
@@ -1082,9 +1082,9 @@ A class to access a filesystem
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** fd
 
@@ -1102,9 +1102,9 @@ Check if a file exists at a given path
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** bool
 
@@ -1126,10 +1126,10 @@ Create a hard link
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`old_path` | string |
-`new_path` | string |
+| Name       | Type   |
+| ---------- | ------ |
+| `old_path` | string |
+| `new_path` | string |
 
 **Returns:** bool
 
@@ -1149,9 +1149,9 @@ Retrieve information about a file or a symbolic link
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** [FileStat](#classesfilestatmd)
 
@@ -1171,9 +1171,9 @@ Create a new directory
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** bool
 
@@ -1195,10 +1195,10 @@ Open a path
 
 ##### Parameters:
 
-Name | Type | Default value |
------- | ------ | ------ |
-`path` | string | - |
-`flags` | string | "r" |
+| Name    | Type   | Default value |
+| ------- | ------ | ------------- |
+| `path`  | string | -             |
+| `flags` | string | "r"           |
 
 **Returns:** [Descriptor](#classesdescriptormd) \| null
 
@@ -1216,9 +1216,9 @@ Get the content of a directory
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`path` | string | the directory path |
+| Name   | Type   | Description        |
+| ------ | ------ | ------------------ |
+| `path` | string | the directory path |
 
 **Returns:** Array\<string> \| null
 
@@ -1240,10 +1240,10 @@ Rename a file
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`old_path` | string |
-`new_path` | string |
+| Name       | Type   |
+| ---------- | ------ |
+| `old_path` | string |
+| `new_path` | string |
 
 **Returns:** bool
 
@@ -1263,9 +1263,9 @@ Remove a directory
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** bool
 
@@ -1285,9 +1285,9 @@ Retrieve information about a file
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** [FileStat](#classesfilestatmd)
 
@@ -1309,10 +1309,10 @@ Create a symbolic link
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`old_path` | string |
-`new_path` | string |
+| Name       | Type   |
+| ---------- | ------ |
+| `old_path` | string |
+| `new_path` | string |
 
 **Returns:** bool
 
@@ -1332,9 +1332,9 @@ Unlink a file
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`path` | string |
+| Name   | Type   |
+| ------ | ------ |
+| `path` | string |
 
 **Returns:** bool
 
@@ -1400,9 +1400,9 @@ Cleanly terminate the current process
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`status` | u32 | exit code  |
+| Name     | Type | Description |
+| -------- | ---- | ----------- |
+| `status` | u32  | exit code   |
 
 **Returns:** void
 
@@ -1438,9 +1438,9 @@ Return an array of random bytes
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`len` | usize | length  |
+| Name  | Type  | Description |
+| ----- | ----- | ----------- |
+| `len` | usize | length      |
 
 **Returns:** Uint8Array
 
@@ -1456,9 +1456,9 @@ Fill a buffer with random data
 
 ##### Parameters:
 
-Name | Type | Description |
------- | ------ | ------ |
-`buffer` | ArrayBuffer | An array buffer  |
+| Name     | Type        | Description     |
+| -------- | ----------- | --------------- |
+| `buffer` | ArrayBuffer | An array buffer |
 
 **Returns:** void
 
@@ -1493,9 +1493,9 @@ Returns a native string from a zero-terminated C string
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`cstring` | usize |
+| Name      | Type  |
+| --------- | ----- |
+| `cstring` | usize |
 
 **Returns:** string
 
@@ -1560,9 +1560,9 @@ ___
 
 ##### Parameters:
 
-Name | Type |
------- | ------ |
-`nanoseconds` | i32 |
+| Name          | Type |
+| ------------- | ---- |
+| `nanoseconds` | i32  |
 
 **Returns:** void
 
@@ -1611,9 +1611,9 @@ A WASI error
 
 ##### Parameters:
 
-Name | Type | Default value |
------- | ------ | ------ |
-`message` | string | "" |
+| Name      | Type   | Default value |
+| --------- | ------ | ------------- |
+| `message` | string | ""            |
 
 **Returns:** [WASIError](#classeswasierrormd)
 
