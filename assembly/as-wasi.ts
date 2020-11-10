@@ -355,7 +355,9 @@ export class Descriptor {
     store<u32>(iov, data_partial, 0);
     store<u32>(iov, data_partial_len, sizeof<usize>());
     let read_ptr = memory.data(8);
-    fd_read(this.rawfd, iov, 1, read_ptr);
+    if (fd_read(this.rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
+      return null;
+    }
     let read = load<usize>(read_ptr);
     if (read > 0) {
       for (let i: usize = 0; i < read; i++) {
@@ -384,7 +386,7 @@ export class Descriptor {
     let rawfd = this.rawfd;
     while (true) {
       if (fd_read(rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
-        break;
+        return null;
       }
       read = load<usize>(read_ptr);
       if (read <= 0) {
@@ -412,7 +414,7 @@ export class Descriptor {
     let line = new Array<u8>();
     while (true) {
       if (fd_read(rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
-        break;
+        return null;
       }
       read = load<usize>(read_ptr);
       if (read < 0) {
