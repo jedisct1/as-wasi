@@ -23,6 +23,8 @@ You can install `as-wasi` in your project by running the following:
 Example usage of the `Console` and `Environ` classes:
 
 ```typescript
+import "wasi";
+
 // Import from the installed as-wasi package
 import { Console, Environ } from "as-wasi";
 
