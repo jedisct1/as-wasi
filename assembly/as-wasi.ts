@@ -364,7 +364,10 @@ export class Descriptor {
         data.push(load<u8>(data_partial + i));
       }
     }
-    return read < 0 ? null : data;
+    if (read < 0) {
+      return null;
+    }
+    return data;
   }
 
   /**
@@ -396,7 +399,10 @@ export class Descriptor {
         data.push(load<u8>(data_partial + i));
       }
     }
-    return read < 0 ? null : data;
+    if (read < 0) {
+      return null;
+    }
+    return data;
   }
 
   /**
