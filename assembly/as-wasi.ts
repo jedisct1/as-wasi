@@ -1102,5 +1102,5 @@ export function wasi_abort(
   Console.error(
     fileName + ":" + lineNumber.toString() + ":" + columnNumber.toString() + ": error: " + message
   );
-  proc_exit(134);
+  proc_exit(1);
 }
