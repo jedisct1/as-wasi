@@ -423,10 +423,8 @@ export class Descriptor {
         return null;
       }
       read = load<usize>(read_ptr);
-      if (read < 0) {
+      if (read <= 0) {
         return null;
-      } else if (read === 0) {
-        break;
       }
       let c = load<u8>(byte);
       if (c == 10) {
@@ -444,7 +442,7 @@ export class Descriptor {
   }
 
   /**
-   * Read an UTF8 string from a file descriptor, convert it to a native string
+   * Read as much data as possible from a file descriptor, convert it to a native string
    * @param chunk_size chunk size (default: 4096)
    */
   readString(chunk_size: usize = 4096): string | null {
@@ -829,7 +827,7 @@ export class Console {
   }
 
   /**
-   * Read an UTF8 string from the console, convert it to a native string
+   * Read as much data as possible from the console, convert it to a native string
    */
   static readAll(): string | null {
     return Descriptor.Stdin.readString();
