@@ -28,7 +28,7 @@ import "wasi";
 // Import from the installed as-wasi package
 import { Console, Environ } from "as-wasi";
 
-// Create an envrion instance
+// Create an environ instance
 let env = new Environ();
 
 // Get the HOME Environment variable
@@ -57,9 +57,9 @@ Reference API documentation can be found in [REFERENCE_API_DOCS](./REFERENCE_API
 * [wasmboy](https://github.com/torch2424/wasmboy) - Game Boy / Game Boy Color Emulator Library, 🎮written for WebAssembly using AssemblyScript. 🚀
 * [wasmerio/io-devices-lib](https://github.com/wasmerio/io-devices-lib) - Library for interacting with the Wasmer Experimental IO Devices API. Uses WASI for outputting graphics in a framebuffer, and handles mouse/keyboard input.
 * [wasm-by-example](https://github.com/torch2424/wasm-by-example) - Wasm By Example is a website with a set of hands-on introduction examples and tutorials for WebAssembly (Wasm). Wasm By Example features `as-wasi` by default for the AssemblyScript WASI examples.
-* [wasm-matrix](https://github.com/torch2424/wasm-matrix) - A Matrix effect in your terminal using AssemblyScript 🚀 and WASI 🧩 . THhise project is a bit older, and uses an older version of `as-wasi`, but still creates a cool effect!
+* [wasm-matrix](https://github.com/torch2424/wasm-matrix) - A Matrix effect in your terminal using AssemblyScript 🚀 and WASI 🧩 . This project is a bit older, and uses an older version of `as-wasi`, but still creates a cool effect!
 
-_If you're project is using as-wasi, and you would like to be featured here. Please open a README with links to your project, and if appropriate, explaining how as-wasi is being used._ 😊
+_If your project is using as-wasi, and you would like to be featured here. Please open a pull request against the README with links to your project, and if appropriate, explaining how as-wasi is being used._ 😊
 
 ## Contributing
 
@@ -69,4 +69,4 @@ This project will also adhere to the [AssemblyScript Code of Conduct](https://gi
 
 ## License
 
-[MIT](https://oss.ninja/mit/jesdict1). 📝
+[MIT](https://oss.ninja/mit/jedisct1). 📝
