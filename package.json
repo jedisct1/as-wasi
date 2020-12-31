@@ -15,7 +15,7 @@
         "assemblyscript": "^0.17.3",
         "concat-md": "^0.3.5",
         "rimraf": "^3.0.0",
-        "typedoc": "^0.19.2",
+        "typedoc": "^0.20.5",
         "typedoc-plugin-markdown": "^3.0.11"
     }
 }
