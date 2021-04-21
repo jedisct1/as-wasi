@@ -379,27 +379,24 @@ export class Descriptor {
     data: u8[] = [],
     chunk_size: usize = 4096
   ): u8[] | null {
-    let data_partial_len = chunk_size;
-    let data_partial = changetype<usize>(new ArrayBuffer(data_partial_len as aisize));
     let iov = memory.data(16);
-    store<u32>(iov, data_partial, 0);
-    store<u32>(iov, data_partial_len, sizeof<usize>());
     let read_ptr = memory.data(8);
-    let read: usize = 0;
     let rawfd = this.rawfd;
-    while (true) {
-      if (fd_read(rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
-        return null;
-      }
-      read = load<usize>(read_ptr);
-      if (read <= 0) {
-        break;
-      }
-      for (let i: usize = 0; i < read; i++) {
-        data.push(load<u8>(data_partial + i));
-      }
+    
+    // Find out the size of the file
+    let result = fd_seek(rawfd, 0, whence.END, read_ptr);
+    // Allocate the memory needed to copy the file's data
+    data = new Array<u8>(load<usize>(read_ptr) as aisize);
+    // Move the pointer back to the beginning of the file
+    result = fd_seek(rawfd, 0, whence.START, read_ptr);
+
+    store<u32>(iov, data.dataStart, 0);
+    store<u32>(iov, data.length, sizeof<usize>());
+
+    if (fd_read(rawfd, iov, 1, read_ptr) !== errno.SUCCESS) {
+      return null;
     }
-    if (read < 0) {
+    if (load<usize>(read_ptr) < 0) {
       return null;
     }
     return data;
