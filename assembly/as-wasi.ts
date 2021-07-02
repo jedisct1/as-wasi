@@ -86,7 +86,7 @@ export class FileStat {
 /**
  * A descriptor, that doesn't necessarily have to represent a file
  */
-@final
+@final @unmanaged
 export class Descriptor {
   /**
    * An invalid file descriptor, that can represent an error
