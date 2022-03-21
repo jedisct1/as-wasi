@@ -12,7 +12,7 @@
         "docs:concat": "concat-md --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
     },
     "devDependencies": {
-        "assemblyscript": "^0.19",
+        "assemblyscript": "^0.20",
         "concat-md": "^0.3",
         "rimraf": "^3.0",
         "typedoc": "^0.22",
