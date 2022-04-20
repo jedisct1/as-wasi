@@ -26,7 +26,8 @@ Example usage of the `Console` and `Environ` classes:
 import "wasi";
 
 // Import from the installed as-wasi package
-import { Console, Environ } from "as-wasi";
+// (Omit "/assembly" in pre-0.20 AssemblyScript.)
+import { Console, Environ } from "as-wasi/assembly";
 
 // Create an environ instance
 let env = new Environ();
