@@ -1,6 +1,6 @@
 {
     "name": "as-wasi",
-    "version": "0.4.6",
+    "version": "0.5.0",
     "scripts": {
         "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --use abort=wasi_abort --debug",
         "asbuild:small": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --use abort=wasi_abort -O3z ",
@@ -12,10 +12,11 @@
         "docs:concat": "concat-md --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
     },
     "devDependencies": {
-        "assemblyscript": "^0.20",
-        "concat-md": "^0.3",
+        "@assemblyscript/wasi-shim": "^0.1",
+        "assemblyscript": "^0.21",
+        "concat-md": "^0.5",
         "rimraf": "^3.0",
         "typedoc": "^0.23",
-        "typedoc-plugin-markdown": "^3.10"
+        "typedoc-plugin-markdown": "^3.13"
     }
 }
