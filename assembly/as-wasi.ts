@@ -1094,17 +1094,3 @@ class StringUtils {
     return String.UTF8.decodeUnsafe(cstring, size);
   }
 }
-
-// @ts-ignore: decorator
-@global
-export function wasi_abort(
-  message: string = "",
-  fileName: string = "",
-  lineNumber: u32 = 0,
-  columnNumber: u32 = 0
-): void {
-  Console.error(
-    fileName + ":" + lineNumber.toString() + ":" + columnNumber.toString() + ": error: " + message
-  );
-  proc_exit(1);
-}
