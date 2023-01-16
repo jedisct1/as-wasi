@@ -17,7 +17,7 @@
     "devDependencies": {
         "assemblyscript": "^0.21",
         "concat-md": "^0.5",
-        "rimraf": "^3.0",
+        "rimraf": "^4.0",
         "typedoc": "^0.23",
         "typedoc-plugin-markdown": "^3.13"
     }
