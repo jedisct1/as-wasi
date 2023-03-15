@@ -1,6 +1,6 @@
 {
     "name": "as-wasi",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "scripts": {
         "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --debug",
         "asbuild:small": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat -O3z ",
