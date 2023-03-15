@@ -50,7 +50,7 @@ import {
   proc_exit,
   random_get,
   rights,
-} from "@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1.ts";
+} from "@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1";
 
 type aisize = i32;
 
