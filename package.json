@@ -19,6 +19,6 @@
         "concat-md": "^0.5",
         "rimraf": "^4.2",
         "typedoc": "^0.23",
-        "typedoc-plugin-markdown": "^3.13"
+        "typedoc-plugin-markdown": "^4.7"
     }
 }
