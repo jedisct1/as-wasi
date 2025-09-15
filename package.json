@@ -15,7 +15,7 @@
         "@assemblyscript/wasi-shim": "^0.1"
     },
     "devDependencies": {
-        "assemblyscript": "^0.27",
+        "assemblyscript": "^0.28",
         "concat-md": "^0.5",
         "rimraf": "^4.2",
         "typedoc": "^0.23",
