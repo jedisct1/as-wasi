@@ -235,7 +235,7 @@ export class Descriptor {
         this.rawfd,
         (atime * 1e9) as u64,
         (mtime * 1e9) as u64,
-        fstflags.SET_ATIM | fstflags.SET_ATIM
+        fstflags.SET_ATIM | fstflags.SET_MTIM
       ) === errno.SUCCESS
     );
   }
@@ -782,6 +782,7 @@ export class FileSystem {
     for (; ;) {
       if (fd_readdir(fd.rawfd, buf, buf_size, 0 as dircookie, buf_used_p) !== errno.SUCCESS) {
         fd.close();
+        return null;
       }
       buf_used = load<u32>(buf_used_p);
       if (buf_used < buf_size) {
@@ -902,10 +903,10 @@ export class Date {
 export class Performance {
   static now(): f64 {
     let time_ptr = memory.data(8);
-    clock_res_get(clockid.MONOTONIC, time_ptr);
-    let res_ts = load<u64>(time_ptr);
+    clock_time_get(clockid.MONOTONIC, 1, time_ptr);
+    let ts = load<u64>(time_ptr);
 
-    return res_ts as f64;
+    return (ts as f64) / 1e6;
   }
 }
 
@@ -1031,7 +1032,7 @@ export class CommandLine {
    */
   get(index: usize): string | null {
     let args = this.args;
-    let args_len: usize = args[0].length;
+    let args_len: usize = args.length;
     if (index < args_len) {
       return unchecked(args[index as aisize]);
     }
