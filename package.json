@@ -8,17 +8,17 @@
         "asbuild": "npm run asbuild:optimized",
         "docs": "npm run docs:clean && npm run docs:typedoc && npm run docs:concat",
         "docs:clean": "rimraf temp-docs",
-        "docs:typedoc": "typedoc --plugin typedoc-plugin-markdown --theme markdown --out temp-docs --tsconfig assembly/tsconfig.json --exclude \"node_modules/**/*\" --readme none assembly",
+        "docs:typedoc": "typedoc --plugin typedoc-plugin-markdown --out temp-docs --tsconfig assembly/tsconfig.json --exclude \"**/node_modules/**\" --skipErrorChecking --readme none assembly",
         "docs:concat": "concat-md --decrease-title-levels --dir-name-as-title temp-docs > REFERENCE_API_DOCS.md"
     },
     "dependencies": {
         "@assemblyscript/wasi-shim": "^0.1"
     },
     "devDependencies": {
-        "assemblyscript": "^0.27",
+        "assemblyscript": "^0.28",
         "concat-md": "^0.5",
-        "rimraf": "^4.2",
-        "typedoc": "^0.23",
-        "typedoc-plugin-markdown": "^3.13"
+        "rimraf": "^6.0",
+        "typedoc": "^0.28",
+        "typedoc-plugin-markdown": "^4.9"
     }
 }
